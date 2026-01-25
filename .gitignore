@@ -1,0 +1,81 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.egg-info/
+*.egg
+*.manifest
+*.spec
+
+# --- Ambientes virtuais ---
+.venv/
+venv/
+env/
+ENV/
+*.env
+
+# --- UV / Poetry / Pipenv ---
+.uv/
+.uv.lock
+poetry.lock
+Pipfile.lock
+
+# --- Configuração local / credenciais ---
+*.env.local
+*.env.development
+*.env.production
+*.secret
+*.key
+*.pem
+*.crt
+
+# --- Logs ---
+*.log
+*.out
+*.err
+
+# --- Compilados / builds ---
+build/
+dist/
+*.egg-info/
+.eggs/
+*.so
+*.dll
+*.dylib
+
+# --- Testes ---
+.coverage
+htmlcov/
+.tox/
+.nox/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+
+# --- IDEs / Editores ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# --- Django específico ---
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+static/
+local_settings.py
+
+# --- Arquivos de sistema ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Docker ---
+*.pid
+*.seed
+*.pid.lock
