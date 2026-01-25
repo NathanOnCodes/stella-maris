@@ -23,7 +23,7 @@ class Post(models.Model):
 
     
     class Meta:
-        db_table = 'postagens'
+        db_table = 'post'
         verbose_name = 'Postagem'
         verbose_name_plural = 'Postagens'
         ordering = ['-criado_em']
