@@ -1,0 +1,1 @@
+from blog.admin.post_admin import *
