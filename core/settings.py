@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     # APPs
     'post',
+    'blog.apps.BlogConfig',
 
 ]
 
