@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login | Regina Caelli{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'static/administrativo/css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="login-wrapper">
+    <div class="card card-login">
+        <div class="card-login-header">
+            <h2 class="mb-0">Regina Caelli</h2>
+            <small class="opacity-75">Painel Administrativo</small>
+        </div>
+        
+        <div class="card-body p-4">
+            <form hx-post="{% url 'administrativo:login' %}" hx-target="#login-errors" hx-swap="innerHTML">
+                {% csrf_token %}
+                
+                <div id="login-errors" class="text-danger small mb-3 text-center">
+                    {% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-muted">{{ form.usuario.label }}</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-person text-muted"></i></span>
+                        {{ form.usuario }}
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-muted">{{ form.senha.label }}</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-lock text-muted"></i></span>
+                        {{ form.senha }}
+                        <button class="input-group-text bg-white border-start-0" type="button" id="togglePassword">
+                            <i class="bi bi-eye-slash text-muted"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary-rc w-100 py-2 rounded-3">
+                    <span class="htmx-indicator spinner-border spinner-border-sm me-2"></span>
+                    Entrar com Fé
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'static/administrativo/js/login.js' %}"></script>
+{% endblock %}
