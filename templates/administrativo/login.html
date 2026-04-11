@@ -4,15 +4,14 @@
 {% block title %}Login | Regina Caelli{% endblock %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'static/administrativo/css/login.css' %}">
+    <link rel="stylesheet" href="{% static 'administrativo/css/login.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="login-wrapper">
     <div class="card card-login">
         <div class="card-login-header">
-            <h2 class="mb-0">Regina Caelli</h2>
-            <small class="opacity-75">Painel Administrativo</small>
+            <h2 class="mb-0"><strong>Regina Caelli</strong></h2>
         </div>
         
         <div class="card-body p-4">
@@ -42,9 +41,8 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary-rc w-100 py-2 rounded-3">
-                    <span class="htmx-indicator spinner-border spinner-border-sm me-2"></span>
-                    Entrar com Fé
+                <button type="submit" class="btn btn-primary-rc w-100 py-2 rounded-3 d-flex align-items-center justify-content-center">
+                    <span><strong>Entre com Fé</strong></span>
                 </button>
             </form>
         </div>
@@ -53,5 +51,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'static/administrativo/js/login.js' %}"></script>
+    <script src="{% static 'administrativo/js/login.js' %}"></script>
 {% endblock %}
