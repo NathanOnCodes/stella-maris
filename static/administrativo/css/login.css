@@ -23,3 +23,9 @@
 }
 
 .card-login-header h2 { font-weight: 300; letter-spacing: 1px; }
+
+.btn-primary-rc:active {
+    transform: scale(0.98);
+    background-color: #001a38;
+    border: 1px solid var(--dourado-coroa);
+}
