@@ -67,7 +67,6 @@ coverage.xml
 db.sqlite3
 media/
 staticfiles/
-static/
 local_settings.py
 
 # --- Arquivos de sistema ---
