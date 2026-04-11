@@ -1,0 +1,25 @@
+.login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-login {
+    width: 100%;
+    max-width: 400px;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.card-login-header {
+    background-color: var(--azul-manto);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px 15px 0 0;
+    border-bottom: 3px solid var(--dourado-coroa);
+    text-align: center;
+}
+
+.card-login-header h2 { font-weight: 300; letter-spacing: 1px; }
