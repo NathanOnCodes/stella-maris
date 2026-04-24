@@ -74,8 +74,7 @@
             
             <div class="card-body p-4 p-md-5">
                 <form method="POST" action="{% url 'blog:postagem-criar' %}" enctype="multipart/form-data" 
-                      hx-post="{% url 'blog:postagem-criar' %}" hx-target="#form-messages" 
-                      hx-disabled-elt="#submit-post" hx-encoding="multipart/form-data">
+                      id="post-form">
                     {% csrf_token %}
                     
                     <!-- Mensagens de erro/sucesso -->
@@ -146,10 +145,6 @@
                             <img id="image-preview" class="image-preview" alt="Prévia da imagem">
                         </div>
                         
-                        <div style="display: none;">
-                            {{ form.imagem }}
-                        </div>
-                        
                         <input type="file" id="image-upload" name="imagem" class="form-control d-none" 
                                accept="image/*" onchange="previewImage(this);">
                         
@@ -181,7 +176,7 @@
                     <div class="d-flex gap-3 mt-5 pt-3 border-top">
                         <button id="submit-post" type="submit" 
                                 class="btn btn-primary-rc px-4 py-2 d-flex align-items-center"
-                                hx-indicator="#submit-indicator">
+                                onclick="handleFormSubmit()">
                             <span id="submit-text">Salvar Postagem</span>
                             <span id="submit-indicator" class="spinner-border spinner-border-sm ms-2" 
                                   role="status" style="display: none;"></span>
@@ -267,29 +262,61 @@ function previewImage(input) {
     }
 }
 
-// HTMX handlers
-document.addEventListener('htmx:beforeRequest', function(evt) {
+// Handlers de submit do formulário
+function handleFormSubmit() {
+    const form = document.getElementById('post-form');
     const submitBtn = document.getElementById('submit-post');
     const submitText = document.getElementById('submit-text');
     const indicator = document.getElementById('submit-indicator');
     
+    // Validação básica do formulário
+    const titulo = document.querySelector('input[name="titulo"]');
+    const conteudo = document.querySelector('textarea[name="conteudo"]');
+    
+    let isValid = true;
+    let errorMessage = '';
+    
+    // Validação do título
+    if (!titulo.value.trim()) {
+        isValid = false;
+        errorMessage = 'O título é obrigatório';
+        titulo.classList.add('is-invalid');
+    } else {
+        titulo.classList.remove('is-invalid');
+    }
+    
+    // Validação do conteúdo
+    if (!conteudo.value.trim()) {
+        isValid = false;
+        errorMessage = errorMessage || 'O conteúdo é obrigatório';
+        conteudo.classList.add('is-invalid');
+    } else {
+        conteudo.classList.remove('is-invalid');
+    }
+    
+    if (!isValid) {
+        // Mostrar mensagem de erro
+        const messageDiv = document.getElementById('form-messages');
+        messageDiv.innerHTML = `
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-circle me-2"></i>
+                <strong>Erro de validação:</strong> ${errorMessage}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+        return false;
+    }
+    
+    // Feedback visual durante o processamento
     if (submitBtn) {
         submitBtn.disabled = true;
         submitText.textContent = 'Processando...';
         indicator.style.display = 'inline-block';
     }
-});
-
-document.addEventListener('htmx:afterRequest', function(evt) {
-    const submitBtn = document.getElementById('submit-post');
-    const submitText = document.getElementById('submit-text');
-    const indicator = document.getElementById('submit-indicator');
     
-    if (submitBtn) {
-        submitBtn.disabled = false;
-        submitText.textContent = 'Salvar Postagem';
-        indicator.style.display = 'none';
-    }
-});
+    // Submeter o formulário
+    form.submit();
+    return true;
+}
 </script>
 {% endblock %}
