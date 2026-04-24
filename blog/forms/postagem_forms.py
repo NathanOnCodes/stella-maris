@@ -3,6 +3,10 @@ from blog.models import Post
 
 
 class PostagemForm(forms.ModelForm):
+    imagem = forms.ImageField(
+        required=False, widget=forms.FileInput(attrs={"class": "form-control"})
+    )
+
     class Meta:
         model = Post
         fields = ["titulo", "conteudo", "imagem", "publicado"]
@@ -21,7 +25,6 @@ class PostagemForm(forms.ModelForm):
                     "rows": 10,
                 }
             ),
-            "imagem": forms.FileInput(attrs={"class": "form-control"}),
             "publicado": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
 
