@@ -10,48 +10,35 @@
     - info/debug → alert-info (azul)
     {% endcomment %}
     
-    {% with alert_class=message.tags|default:"info" %}
-    {% if alert_class == "error" %}
-        {% set alert_class = "danger" %}
+    {% if message.tags == "error" or message.tags == "danger" %}
+        {% with alert_class="danger" alert_icon="bi-exclamation-circle-fill" alert_title="Erro!" %}
+    {% elif message.tags == "success" %}
+        {% with alert_class="success" alert_icon="bi-check-circle-fill" alert_title="Sucesso!" %}
+    {% elif message.tags == "warning" %}
+        {% with alert_class="warning" alert_icon="bi-exclamation-triangle-fill" alert_title="Atenção!" %}
+    {% else %}
+        {% with alert_class="info" alert_icon="bi-info-circle-fill" alert_title="Informação" %}
     {% endif %}
     
-    <div class="alert alert-{{ alert_class }} alert-dismissible fade show shadow" 
-         role="alert">
-        <div class="d-flex align-items-center">
-            <!-- Ícone baseado no tipo de mensagem -->
-            <div class="me-3">
-                {% if alert_class == "success" %}
-                    <i class="bi bi-check-circle-fill fs-4"></i>
-                {% elif alert_class == "danger" %}
-                    <i class="bi bi-exclamation-circle-fill fs-4"></i>
-                {% elif alert_class == "warning" %}
-                    <i class="bi bi-exclamation-triangle-fill fs-4"></i>
-                {% else %}
-                    <i class="bi bi-info-circle-fill fs-4"></i>
-                {% endif %}
+        <div class="alert alert-{{ alert_class }} alert-dismissible fade show shadow" role="alert">
+            <div class="d-flex align-items-center">
+                <!-- Ícone baseado no tipo de mensagem -->
+                <div class="me-3">
+                    <i class="bi {{ alert_icon }} fs-4"></i>
+                </div>
+                
+                <!-- Conteúdo da mensagem -->
+                <div class="flex-grow-1">
+                    <h6 class="alert-heading mb-1">{{ alert_title }}</h6>
+                    <p class="mb-0">{{ message }}</p>
+                </div>
             </div>
             
-            <!-- Conteúdo da mensagem -->
-            <div class="flex-grow-1">
-                <h6 class="alert-heading mb  -1">
-                    {% if alert_class == "success" %}
-                        Sucesso!
-                    {% elif alert_class == "danger" %}
-                        Erro!
-                    {% elif alert_class == "warning" %}
-                        Atenção!
-                    {% else %}
-                        Informação
-                    {% endif %}
-                </h6>
-                <p class="mb-0">{{ message }}</p>
-            </div>
+            <!-- Botão de fechar -->
+            <button type="button" class="btn-close" 
+                    data-bs-dismiss="alert" aria-label="Fechar"></button>
         </div>
         
-        <!-- Botão de fechar -->
-        <button type="button" class="btn-close" 
-                data-bs-dismiss="alert" aria-label="Fechar"></button>
-    </div>
     {% endwith %}
     {% endfor %}
 </div>
