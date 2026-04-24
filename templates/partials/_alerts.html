@@ -1,0 +1,58 @@
+<!-- Sistema de Alertas/Mensagens Django -->
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+    {% comment %} 
+    Mapeamento de tags Django para classes Bootstrap:
+    - success → alert-success (verde)
+    - error/danger → alert-danger (vermelho)  
+    - warning → alert-warning (amarelo)
+    - info/debug → alert-info (azul)
+    {% endcomment %}
+    
+    {% with alert_class=message.tags|default:"info" %}
+    {% if alert_class == "error" %}
+        {% set alert_class = "danger" %}
+    {% endif %}
+    
+    <div class="alert alert-{{ alert_class }} alert-dismissible fade show shadow" 
+         role="alert">
+        <div class="d-flex align-items-center">
+            <!-- Ícone baseado no tipo de mensagem -->
+            <div class="me-3">
+                {% if alert_class == "success" %}
+                    <i class="bi bi-check-circle-fill fs-4"></i>
+                {% elif alert_class == "danger" %}
+                    <i class="bi bi-exclamation-circle-fill fs-4"></i>
+                {% elif alert_class == "warning" %}
+                    <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+                {% else %}
+                    <i class="bi bi-info-circle-fill fs-4"></i>
+                {% endif %}
+            </div>
+            
+            <!-- Conteúdo da mensagem -->
+            <div class="flex-grow-1">
+                <h6 class="alert-heading mb  -1">
+                    {% if alert_class == "success" %}
+                        Sucesso!
+                    {% elif alert_class == "danger" %}
+                        Erro!
+                    {% elif alert_class == "warning" %}
+                        Atenção!
+                    {% else %}
+                        Informação
+                    {% endif %}
+                </h6>
+                <p class="mb-0">{{ message }}</p>
+            </div>
+        </div>
+        
+        <!-- Botão de fechar -->
+        <button type="button" class="btn-close" 
+                data-bs-dismiss="alert" aria-label="Fechar"></button>
+    </div>
+    {% endwith %}
+    {% endfor %}
+</div>
+{% endif %}
