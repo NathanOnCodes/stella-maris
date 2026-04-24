@@ -15,7 +15,7 @@
         </div>
         
         <div class="card-body p-4">
-            <form hx-post="{% url 'administrativo:login' %}" hx-target="#login-errors" hx-swap="innerHTML">
+            <form hx-post="{% url 'administrativo:login' %}" hx-target="#login-errors" hx-swap="innerHTML" hx-disabled-elt="#submit-login">
                 {% csrf_token %}
                 
                 <div id="login-errors" class="text-danger small mb-3 text-center">
@@ -41,8 +41,12 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary-rc w-100 py-2 rounded-3 d-flex align-items-center justify-content-center">
-                    <span><strong>Entre com Fé</strong></span>
+                <button id="submit-login" type="submit" class="btn btn-primary-rc w-100 py-2 rounded-3 d-flex align-items-center justify-content-center"
+                    hx-indicator=".htmx-indicator">
+                    <span id="submit-text"><strong>Entre com Fé</strong></span>
+                    <span class="htmx-indicator spinner-border spinner-border-sm ms-2" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </span>
                 </button>
             </form>
         </div>
