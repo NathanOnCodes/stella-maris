@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Blog | Regina Caelli{% endblock %}
+
+{% block content %}
+<div class="mb-5">
+    <!-- Cabeçalho da página -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold text-primary-rc mb-3">
+            <i class="bi bi-journal-bookmark text-accent"></i>
+            Blog Regina Caelli
+        </h1>
+        <p class="lead text-muted">
+            Reflexões, ensinamentos e partilhas para a edificação espiritual.
+        </p>
+        
+        {% if not posts %}
+        <!-- Mensagem para quando não há postagens -->
+        <div class="alert alert-info mt-4">
+            <div class="d-flex">
+                <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+                <div>
+                    <h5 class="alert-heading">Nenhuma postagem publicada</h5>
+                    <p class="mb-0">Aguardamos ansiosos pelas próximas reflexões!</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if posts %}
+    <!-- Grid de postagens -->
+    <div class="row g-4">
+        {% for post in posts %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm hover-card">
+                <!-- Imagem da postagem -->
+                {% if post.imagem %}
+                <div class="position-relative">
+                    <img src="{{ post.imagem.url }}" class="card-img-top" 
+                         alt="{{ post.titulo }}" style="height: 200px; object-fit: cover;">
+                    <div class="position-absolute top-0 end-0 m-2">
+                        <span class="badge bg-primary-rc rounded-pill">
+                            Postagem
+                        </span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                     style="height: 200px;">
+                    <i class="bi bi-journal-text text-primary-rc fs-1"></i>
+                </div>
+                {% endif %}
+                
+                <!-- Corpo do card -->
+                <div class="card-body d-flex flex-column">
+                    <!-- Cabeçalho do card -->
+                    <div class="mb-2">
+                        <small class="text-muted d-flex align-items-center">
+                            <i class="bi bi-calendar me-1"></i>
+                            {{ post.criado_em|date:"d/m/Y" }}
+                        </small>
+                    </div>
+                    
+                    <!-- Título -->
+                    <h5 class="card-title fw-bold text-primary-rc">
+                        {{ post.titulo|truncatechars:60 }}
+                    </h5>
+                    
+                    <!-- Resumo do conteúdo -->
+                    <p class="card-text text-muted flex-grow-1">
+                        {% if post.conteudo|length > 150 %}
+                            {{ post.conteudo|striptags|truncatechars:150 }}
+                        {% else %}
+                            {{ post.conteudo|striptags }}
+                        {% endif %}
+                    </p>
+                    
+                    <!-- Autor -->
+                    <div class="mt-2 mb-3">
+                        <small class="text-muted d-flex align-items-center">
+                            <i class="bi bi-person-circle me-1"></i>
+                            {% if post.autor.get_full_name %}
+                                {{ post.autor.get_full_name }}
+                            {% else %}
+                                {{ post.autor.username }}
+                            {% endif %}
+                        </small>
+                    </div>
+                    
+                    <!-- Botão para ler mais -->
+                    <div class="mt-auto">
+                        <a href="{% url 'blog:postagem-detalhe' slug=post.slug %}" 
+                           class="btn btn-outline-primary-rc w-100">
+                            <i class="bi bi-book me-1"></i>
+                            Ler mais
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Paginação (placeholder para futuro) -->
+    {% if posts.has_other_pages %}
+    <div class="mt-5">
+        <nav aria-label="Navegação de páginas">
+            <ul class="pagination justify-content-center">
+                {% if posts.has_previous %}
+                <li class="page-item">
+                    <a class="page-link text-primary-rc" 
+                       href="?page={{ posts.previous_page_number }}">
+                        Anterior
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for num in posts.paginator.page_range %}
+                <li class="page-item {% if posts.number == num %}active{% endif %}">
+                    <a class="page-link {% if posts.number == num %}bg-primary-rc border-primary-rc{% else %}text-primary-rc{% endif %}" 
+                       href="?page={{ num }}">
+                        {{ num }}
+                    </a>
+                </li>
+                {% endfor %}
+                
+                {% if posts.has_next %}
+                <li class="page-item">
+                    <a class="page-link text-primary-rc" 
+                       href="?page={{ posts.next_page_number }}">
+                        Próxima
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+    
+    <!-- Estatísticas -->
+    <div class="mt-5 pt-4 border-top text-center">
+        <p class="text-muted">
+            <i class="bi bi-collection me-1"></i>
+            Total de postagens: <strong>{{ posts|length }}</strong>
+        </p>
+    </div>
+    
+    {% endif %}
+</div>
+
+<style>
+.hover-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: 1px solid rgba(0, 40, 85, 0.1);
+}
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 40, 85, 0.15) !important;
+    border-color: var(--rc-accent);
+}
+</style>
+{% endblock %}
