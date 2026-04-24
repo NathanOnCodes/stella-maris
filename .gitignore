@@ -78,3 +78,7 @@ desktop.ini
 *.pid
 *.seed
 *.pid.lock
+
+# ----- json -----
+opencode.jsonc
+AGENTS.md
