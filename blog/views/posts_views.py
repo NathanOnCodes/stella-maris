@@ -39,8 +39,9 @@ def processar_postagem(request):
             post.autor = request.user
             post.save()
             messages.success(request, "Postagem criada com sucesso!")
-            return redirect("postagem-detalhe", slug=post.slug)
-        messages.error(request, "Corrija os erros no formulário.")
+            return redirect("blog:postagem-detalhe", slug=post.slug)
+        else:
+            messages.error(request, "Corrija os erros no formulário.")
     else:
         form = PostagemForm()
 
