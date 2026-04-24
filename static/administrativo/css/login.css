@@ -14,11 +14,11 @@
 }
 
 .card-login-header {
-    background-color: var(--azul-manto);
+    background-color: var(--rc-primary);
     color: white;
     padding: 2rem;
     border-radius: 15px 15px 0 0;
-    border-bottom: 3px solid var(--dourado-coroa);
+    border-bottom: 3px solid var(--rc-accent);
     text-align: center;
 }
 
@@ -27,5 +27,5 @@
 .btn-primary-rc:active {
     transform: scale(0.98);
     background-color: #001a38;
-    border: 1px solid var(--dourado-coroa);
+    border: 1px solid var(--rc-accent);
 }
