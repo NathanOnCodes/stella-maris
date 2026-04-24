@@ -12,13 +12,73 @@
     
     <!-- Seu CSS Global -->
     <link rel="stylesheet" href="{% static 'global.css' %}">
+    
+    <!-- Variáveis CSS Regina Caelli -->
+    <style>
+    :root {
+        --rc-primary: #002855;    /* azul-manto */
+        --rc-accent: #C5A059;     /* dourado-coroa */
+        --rc-light: #F8F9FA;
+        --rc-dark: #212529;
+        --rc-gray: #6C757D;
+    }
+    
+    .bg-primary-rc { background-color: var(--rc-primary) !important; }
+    .text-primary-rc { color: var(--rc-primary) !important; }
+    .border-primary-rc { border-color: var(--rc-primary) !important; }
+    
+    .btn-primary-rc { 
+        background-color: var(--rc-primary);
+        border-color: var(--rc-primary);
+        color: white;
+        font-weight: 500;
+        transition: all 0.2s ease-in-out;
+    }
+    .btn-primary-rc:hover {
+        background-color: #001a38;
+        border-color: var(--rc-accent);
+        color: var(--rc-accent);
+        transform: translateY(-1px);
+    }
+    
+    .btn-outline-primary-rc { 
+        border-color: var(--rc-primary);
+        color: var(--rc-primary);
+    }
+    .btn-outline-primary-rc:hover {
+        background-color: var(--rc-primary);
+        border-color: var(--rc-accent);
+        color: white;
+    }
+    
+    .text-accent { color: var(--rc-accent) !important; }
+    .border-accent { border-color: var(--rc-accent) !important; }
+    
+    .card-header-rc {
+        background-color: var(--rc-primary);
+        color: white;
+        border-bottom: 3px solid var(--rc-accent);
+    }
+    </style>
 
     <script src="https://unpkg.com/htmx.org@1.9.10" defer></script>
 
     {% block extra_head %}{% endblock %}
 </head>
 <body>
-    {% block content %}{% endblock %}
+    <!-- Header principal -->
+    {% include "partials/_header.html" %}
+    
+    <!-- Alertas/mensagens do sistema -->
+    {% include "partials/_alerts.html" %}
+    
+    <!-- Conteúdo principal com container Bootstrap -->
+    <main class="container py-4" style="min-height: 70vh;">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    {% include "partials/_footer.html" %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     {% block extra_js %}{% endblock %}
