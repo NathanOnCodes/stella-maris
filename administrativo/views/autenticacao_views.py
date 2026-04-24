@@ -5,25 +5,13 @@ from django.contrib.auth.decorators import login_required
 from administrativo.forms.autenticacao_forms import LoginForm
 
 
-def login(requisicao):
+def login_view(requisicao):
     """
-    Renderiza a tela de login com formulário vazio.
+    View unificada para exibição e processamento do formulário de login.
 
     Se o usuário já estiver autenticado, redireciona para a home do blog.
-    """
-    if requisicao.user.is_authenticated:
-        return redirect("blog:postagem-lista")
-
-    form = LoginForm()
-    return render(requisicao, "administrativo/login.html", {"form": form})
-
-
-def processar_login(requisicao):
-    """
-    Processa o envio do formulário de login.
-
-    Valida as credenciais usando authenticate() e realiza o login
-    se as credenciais forem válidas. Caso contrário, exibe mensagem de erro.
+    Se for requisição POST, processa o login.
+    Caso contrário, exibe formulário vazio.
     """
     if requisicao.user.is_authenticated:
         return redirect("blog:postagem-lista")
@@ -40,11 +28,10 @@ def processar_login(requisicao):
 
             if usuario_autenticado is not None:
                 auth_login(requisicao, usuario_autenticado)
+                messages.success(requisicao, "Login realizado com sucesso!")
                 return redirect("blog:postagem-lista")
-            else:
-                messages.error(
-                    requisicao, "Usuário ou senha incorretos. Tente novamente."
-                )
+
+            messages.error(requisicao, "Usuário ou senha incorretos. Tente novamente.")
     else:
         form = LoginForm()
 
