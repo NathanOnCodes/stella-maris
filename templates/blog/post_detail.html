@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ post.titulo }} | Regina Caelli{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Botão voltar -->
+        <div class="mb-4">
+            <a href="{% url 'blog:postagem-lista' %}" class="btn btn-outline-primary-rc">
+                <i class="bi bi-arrow-left"></i>
+                Voltar ao blog
+            </a>
+        </div>
+
+        <!-- Cabeçalho da postagem -->
+        <div class="mb-5">
+            {% if post.imagem %}
+            <!-- Imagem de capa -->
+            <div class="position-relative rounded-3 overflow-hidden mb-4">
+                <img src="{{ post.imagem.url }}" class="img-fluid w-100" 
+                     alt="{{ post.titulo }}" style="max-height: 400px; object-fit: cover;">
+                <div class="position-absolute top-0 start-0 m-3">
+                    <span class="badge bg-primary-rc opacity-90 rounded-pill px-3 py-2">
+                        <i class="bi bi-bookmark-check"></i>
+                        Postagem
+                    </span>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Título e metadados -->
+            <div class="text-center">
+                <h1 class="display-5 fw-bold text-primary-rc mb-3">{{ post.titulo }}</h1>
+                
+                <div class="d-flex flex-wrap justify-content-center align-items-center text-muted mb-4">
+                    <div class="me-4 d-flex align-items-center">
+                        <i class="bi bi-person-circle me-2"></i>
+                        <span>
+                            {% if post.autor.get_full_name %}
+                                {{ post.autor.get_full_name }}
+                            {% else %}
+                                {{ post.autor.username }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="me-4 d-flex align-items-center">
+                        <i class="bi bi-calendar me-2"></i>
+                        <span>{{ post.criado_em|date:"d \\d\\e F \\d\\e Y" }}</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-clock me-2"></i>
+                        <span>{{ post.criado_em|date:"H:i" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conteúdo da postagem -->
+        <article class="article-content mb-5">
+            <div class="bg-white p-4 p-md-5 rounded-3 shadow-sm">
+                {{ post.conteudo|safe }}
+            </div>
+        </article>
+
+        <!-- Informações finais -->
+        <div class="border-top pt-4 mt-5">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card border-primary-rc">
+                        <div class="card-header bg-primary-rc text-white">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Informações da postagem
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2">
+                                    <i class="bi bi-calendar-plus text-primary-rc me-2"></i>
+                                    <strong>Criada em:</strong> {{ post.criado_em|date:"d/m/Y H:i" }}
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-calendar-check text-primary-rc me-2"></i>
+                                    <strong>Atualizada em:</strong> {{ post.atualizado_em|date:"d/m/Y H:i" }}
+                                </li>
+                                <li>
+                                    <i class="bi bi-key text-primary-rc me-2"></i>
+                                    <strong>ID:</strong> <small class="text-muted">{{ post.id }}</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mt-4 mt-md-0">
+                    <div class="card border-accent">
+                        <div class="card-header text-white" style="background-color: var(--rc-accent);">
+                            <i class="bi bi-share me-2"></i>
+                            Compartilhar
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline-primary btn-sm flex-fill">
+                                    <i class="bi bi-facebook me-1"></i> Facebook
+                                </button>
+                                <button class="btn btn-outline-info btn-sm flex-fill">
+                                    <i class="bi bi-twitter me-1"></i> Twitter
+                                </button>
+                                <button class="btn btn-outline-success btn-sm flex-fill">
+                                    <i class="bi bi-whatsapp me-1"></i> WhatsApp
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navegação entre postagens -->
+        {% if previous_post or next_post %}
+        <div class="border-top pt-4 mt-5">
+            <h5 class="text-muted mb-4">
+                <i class="bi bi-arrow-left-right text-primary-rc me-2"></i>
+                Continue lendo
+            </h5>
+            <div class="row g-3">
+                {% if previous_post %}
+                <div class="col-md-6">
+                    <div class="card border-start-3 border-start-primary-rc h-100">
+                        <div class="card-body">
+                            <small class="text-muted d-block mb-2">
+                                <i class="bi bi-arrow-left"></i>
+                                Postagem anterior
+                            </small>
+                            <h6 class="card-title">
+                                <a href="{% url 'blog:postagem-detalhe' slug=previous_post.slug %}" 
+                                   class="text-decoration-none text-primary-rc">
+                                    {{ previous_post.titulo }}
+                                </a>
+                            </h6>
+                            <p class="card-text text-muted small">
+                                {{ previous_post.conteudo|striptags|truncatechars:80 }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if next_post %}
+                <div class="col-md-6">
+                    <div class="card border-start-3 border-start-primary-rc h-100">
+                        <div class="card-body">
+                            <small class="text-muted d-block mb-2">
+                                <i class="bi bi-arrow-right"></i>
+                                Próxima postagem
+                            </small>
+                            <h6 class="card-title">
+                                <a href="{% url 'blog:postagem-detalhe' slug=next_post.slug %}" 
+                                   class="text-decoration-none text-primary-rc">
+                                    {{ next_post.titulo }}
+                                </a>
+                            </h6>
+                            <p class="card-text text-muted small">
+                                {{ next_post.conteudo|striptags|truncatechars:80 }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.article-content h1, .article-content h2, .article-content h3, .article-content h4 {
+    color: var(--rc-primary);
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+.article-content p {
+    margin-bottom: 1rem;
+    line-height: 1.7;
+    font-size: 1.1rem;
+}
+.article-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+}
+.article-content blockquote {
+    border-left: 4px solid var(--rc-accent);
+    padding-left: 1.5rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: var(--rc-gray);
+}
+.article-content code {
+    background-color: rgba(0, 40, 85, 0.05);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+}
+.border-start-3 {
+    border-left-width: 3px !important;
+}
+</style>
+{% endblock %}
