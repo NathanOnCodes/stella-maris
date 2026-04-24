@@ -1,7 +1,5 @@
-{% extends 'base.html' %}
+{% extends 'base_login.html' %}
 {% load static %}
-
-{% block title %}Login | Regina Caelli{% endblock %}
 
 {% block extra_head %}
     <link rel="stylesheet" href="{% static 'administrativo/css/login.css' %}">
@@ -15,12 +13,25 @@
         </div>
         
         <div class="card-body p-4">
-            <form hx-post="{% url 'administrativo:login' %}" hx-target="#login-errors" hx-swap="innerHTML" hx-disabled-elt="#submit-login">
+            <form method="post" action="{% url 'administrativo:login' %}">
                 {% csrf_token %}
                 
-                <div id="login-errors" class="text-danger small mb-3 text-center">
-                    {% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
-                </div>
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-3" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger mb-3">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
 
                 <div class="mb-3">
                     <label class="form-label small fw-bold text-muted">{{ form.usuario.label }}</label>
@@ -41,12 +52,8 @@
                     </div>
                 </div>
 
-                <button id="submit-login" type="submit" class="btn btn-primary-rc w-100 py-2 rounded-3 d-flex align-items-center justify-content-center"
-                    hx-indicator=".htmx-indicator">
-                    <span id="submit-text"><strong>Entre com Fé</strong></span>
-                    <span class="htmx-indicator spinner-border spinner-border-sm ms-2" role="status">
-                        <span class="visually-hidden">Carregando...</span>
-                    </span>
+                <button type="submit" class="btn btn-primary-rc w-100 py-2 rounded-3">
+                    <strong>Entre com Fé</strong>
                 </button>
             </form>
         </div>
