@@ -19,8 +19,8 @@
             {% if post.imagem %}
             <!-- Imagem de capa -->
             <div class="position-relative rounded-3 overflow-hidden mb-4">
-                <img src="{{ post.imagem.url }}" class="img-fluid w-100" 
-                     alt="{{ post.titulo }}" style="max-height: 400px; object-fit: cover;">
+                <img src="{{ post.imagem.url }}" class="img-fluid w-100" alt="{{ post.titulo }}"
+                    style="max-height: 400px; object-fit: cover;">
                 <div class="position-absolute top-0 start-0 m-3">
                     <span class="badge bg-primary-rc opacity-90 rounded-pill px-3 py-2">
                         <i class="bi bi-bookmark-check"></i>
@@ -33,17 +33,16 @@
             <!-- Título e metadados -->
             <div class="text-center">
                 <h1 class="display-5 fw-bold text-primary-rc mb-3">{{ post.titulo }}</h1>
-                
+
                 <div class="d-flex flex-wrap justify-content-center align-items-center text-muted mb-4">
                     <div class="me-4 d-flex align-items-center">
-                        <i class="bi bi-person-circle me-2"></i>
-                        <span>
-                            {% if post.autor.get_full_name %}
-                                {{ post.autor.get_full_name }}
-                            {% else %}
-                                {{ post.autor.username }}
-                            {% endif %}
-                        </span>
+                        {% if post.autor.path_avatar %}
+                        <img src="{{ post.autor.path_avatar.url }}" alt="Avatar" class="rounded-circle me-2" width="20"
+                            height="20" style="object-fit: cover; display: inline-block;">
+                        {% else %}
+                        <i class="bi bi-person-circle me-2" style="font-size: 1.2rem;"></i>
+                        {% endif %}
+                        <span>{{ post.autor.get_full_name|default:post.autor.username }}</span>
                     </div>
                     <div class="me-4 d-flex align-items-center">
                         <i class="bi bi-calendar me-2"></i>
@@ -82,10 +81,6 @@
                                 <li class="mb-2">
                                     <i class="bi bi-calendar-check text-primary-rc me-2"></i>
                                     <strong>Atualizada em:</strong> {{ post.atualizado_em|date:"d/m/Y H:i" }}
-                                </li>
-                                <li>
-                                    <i class="bi bi-key text-primary-rc me-2"></i>
-                                    <strong>ID:</strong> <small class="text-muted">{{ post.id }}</small>
                                 </li>
                             </ul>
                         </div>
@@ -132,8 +127,8 @@
                                 Postagem anterior
                             </small>
                             <h6 class="card-title">
-                                <a href="{% url 'blog:postagem-detalhe' slug=previous_post.slug %}" 
-                                   class="text-decoration-none text-primary-rc">
+                                <a href="{% url 'blog:postagem-detalhe' slug=previous_post.slug %}"
+                                    class="text-decoration-none text-primary-rc">
                                     {{ previous_post.titulo }}
                                 </a>
                             </h6>
@@ -144,7 +139,7 @@
                     </div>
                 </div>
                 {% endif %}
-                
+
                 {% if next_post %}
                 <div class="col-md-6">
                     <div class="card border-start-3 border-start-primary-rc h-100">
@@ -154,8 +149,8 @@
                                 Próxima postagem
                             </small>
                             <h6 class="card-title">
-                                <a href="{% url 'blog:postagem-detalhe' slug=next_post.slug %}" 
-                                   class="text-decoration-none text-primary-rc">
+                                <a href="{% url 'blog:postagem-detalhe' slug=next_post.slug %}"
+                                    class="text-decoration-none text-primary-rc">
                                     {{ next_post.titulo }}
                                 </a>
                             </h6>
@@ -173,37 +168,45 @@
 </div>
 
 <style>
-.article-content h1, .article-content h2, .article-content h3, .article-content h4 {
-    color: var(--rc-primary);
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
-}
-.article-content p {
-    margin-bottom: 1rem;
-    line-height: 1.7;
-    font-size: 1.1rem;
-}
-.article-content img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    margin: 1.5rem 0;
-}
-.article-content blockquote {
-    border-left: 4px solid var(--rc-accent);
-    padding-left: 1.5rem;
-    margin: 1.5rem 0;
-    font-style: italic;
-    color: var(--rc-gray);
-}
-.article-content code {
-    background-color: rgba(0, 40, 85, 0.05);
-    padding: 0.2rem 0.4rem;
-    border-radius: 4px;
-    font-family: 'Courier New', monospace;
-}
-.border-start-3 {
-    border-left-width: 3px !important;
-}
+    .article-content h1,
+    .article-content h2,
+    .article-content h3,
+    .article-content h4 {
+        color: var(--rc-primary);
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .article-content p {
+        margin-bottom: 1rem;
+        line-height: 1.7;
+        font-size: 1.1rem;
+    }
+
+    .article-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+    }
+
+    .article-content blockquote {
+        border-left: 4px solid var(--rc-accent);
+        padding-left: 1.5rem;
+        margin: 1.5rem 0;
+        font-style: italic;
+        color: var(--rc-gray);
+    }
+
+    .article-content code {
+        background-color: rgba(0, 40, 85, 0.05);
+        padding: 0.2rem 0.4rem;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+    }
+
+    .border-start-3 {
+        border-left-width: 3px !important;
+    }
 </style>
 {% endblock %}

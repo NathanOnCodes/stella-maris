@@ -5,62 +5,121 @@
 
 {% block extra_head %}
 <style>
-.form-group {
-    margin-bottom: 1.5rem;
-}
-.form-label {
-    font-weight: 600;
-    color: var(--rc-primary);
-    margin-bottom: 0.5rem;
-}
-.form-control:focus, .form-select:focus {
-    border-color: var(--rc-accent);
-    box-shadow: 0 0 0 0.25rem rgba(197, 160, 89, 0.25);
-}
-.image-preview-container {
-    border: 2px dashed var(--rc-gray);
-    border-radius: 8px;
-    padding: 2rem;
-    text-align: center;
-    background-color: rgba(0, 40, 85, 0.02);
-    min-height: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-.image-preview-container:hover {
-    border-color: var(--rc-accent);
-    background-color: rgba(197, 160, 89, 0.05);
-}
-.image-preview {
-    max-width: 100%;
-    max-height: 300px;
-    display: none;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-#upload-icon {
-    font-size: 3rem;
-    color: var(--rc-gray);
-}
-.form-check-label {
-    color: var(--rc-primary);
-    font-weight: 500;
-}
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--rc-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--rc-accent);
+        box-shadow: 0 0 0 0.25rem rgba(197, 160, 89, 0.25);
+    }
+
+    .image-preview-container {
+        border: 2px dashed var(--rc-gray);
+        border-radius: 8px;
+        padding: 2rem;
+        text-align: center;
+        background-color: rgba(0, 40, 85, 0.02);
+        min-height: 200px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .image-preview-container:hover {
+        border-color: var(--rc-accent);
+        background-color: rgba(197, 160, 89, 0.05);
+    }
+
+    .image-preview {
+        max-width: 100%;
+        max-height: 300px;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1rem;
+    }
+
+    #upload-icon {
+        font-size: 3rem;
+        color: var(--rc-gray);
+    }
+
+    .form-check-label {
+        color: var(--rc-primary);
+        font-weight: 500;
+    }
+
+    .is-invalid {
+        border-color: #dc3545;
+    }
+
+    .invalid-feedback {
+        display: block;
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
+<div class="row justify-content-center" x-data="{
+        loading: false,
+        errorMessage: '',
+        imagePreview: null,
+        titulo: '{{ form.titulo.value|default:""|escapejs }}',
+        conteudo: '{{ form.conteudo.value|default:""|escapejs }}',
+        publicado: {{ form.publicado.value|default:'false'|lower }},
+        
+        validateForm() {
+            if (!this.titulo?.trim()) {
+                this.errorMessage = 'Título é obrigatório';
+                return false;
+            }
+            if (!this.conteudo?.trim()) {
+                this.errorMessage = 'Conteúdo é obrigatório';
+                return false;
+            }
+            return true;
+        },
+        
+        handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => this.imagePreview = e.target.result;
+                reader.readAsDataURL(file);
+            }
+        },
+        
+        removeImage() {
+            this.imagePreview = null;
+            this.$refs.fileInput.value = '';
+        },
+        
+        handleSubmit() {
+            if (!this.validateForm() || this.loading) return;
+            this.loading = true;
+            this.$el.submit();
+        }
+     }">
+
     <div class="col-lg-8">
         <!-- Cabeçalho -->
         <div class="mb-4">
             <a href="{% url 'blog:postagem-lista' %}" class="btn btn-outline-primary-rc">
-                <i class="bi bi-arrow-left"></i>
-                Voltar ao blog
+                <i class="bi bi-arrow-left"></i> Voltar ao blog
             </a>
         </div>
 
@@ -71,117 +130,91 @@
                     {{ titulo_pagina|default:"Nova Postagem" }}
                 </h3>
             </div>
-            
+
             <div class="card-body p-4 p-md-5">
-                <form method="POST" action="{% url 'blog:postagem-criar' %}" enctype="multipart/form-data" 
-                      id="post-form">
+                <form method="POST" action="{% url 'blog:postagem-criar' %}" enctype="multipart/form-data"
+                    @submit.prevent="handleSubmit">
+
                     {% csrf_token %}
-                    
-                    <!-- Mensagens de erro/sucesso -->
-                    <div id="form-messages" class="mb-4">
-                        {% if form.errors %}
-                        <div class="alert alert-danger">
-                            <h6 class="alert-heading mb-2">
-                                <i class="bi bi-exclamation-circle me-2"></i>
-                                Corrija os erros abaixo
-                            </h6>
-                            {% for field, errors in form.errors.items %}
-                                {% for error in errors %}
-                                    <p class="mb-1 small">{{ error }}</p>
-                                {% endfor %}
-                            {% endfor %}
+
+                    <!-- Mensagens do Django -->
+                    {% if form.errors %}
+                    <div class="alert alert-danger mb-4">
+                        <h6 class="alert-heading mb-2">
+                            <i class="bi bi-exclamation-circle me-2"></i>
+                            Corrija os erros abaixo
+                        </h6>
+                        {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                        <p class="mb-1 small">{{ error|escape }}</p>
+                        {% endfor %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Mensagem de erro client-side -->
+                    <div class="alert alert-danger mb-4" x-show="errorMessage" x-text="errorMessage"></div>
+
+                    <!-- Título -->
+                    <div class="form-group">
+                        <label class="form-label">Título <span class="text-danger">*</span></label>
+                        <input type="text" name="titulo" class="form-control"
+                            :class="{'is-invalid': errorMessage && !titulo}" x-model="titulo" maxlength="200" required>
+                        <div class="invalid-feedback" x-show="errorMessage && !titulo">Título é obrigatório</div>
+                    </div>
+
+                    <!-- Conteúdo -->
+                    <div class="form-group">
+                        <label class="form-label">Conteúdo <span class="text-danger">*</span></label>
+                        <textarea name="conteudo" class="form-control"
+                            :class="{'is-invalid': errorMessage && !conteudo}" x-model="conteudo" rows="10"
+                            required></textarea>
+                        <div class="invalid-feedback" x-show="errorMessage && !conteudo">Conteúdo é obrigatório</div>
+                    </div>
+
+                    <!-- Imagem -->
+                    <div class="form-group">
+                        <label class="form-label">Imagem <span class="text-muted small">(opcional)</span></label>
+
+                        <div class="image-preview-container" @click="$refs.fileInput.click()">
+                            <template x-if="!imagePreview">
+                                <div>
+                                    <div id="upload-icon" class="mb-3">
+                                        <i class="bi bi-cloud-arrow-up"></i>
+                                    </div>
+                                    <p class="mb-2 text-muted">Clique para selecionar uma imagem</p>
+                                    <p class="small text-muted mb-0">Formatos: JPG, PNG, GIF | Máx: 5MB</p>
+                                </div>
+                            </template>
+
+                            <template x-if="imagePreview">
+                                <div class="text-center">
+                                    <img :src="imagePreview" class="image-preview" alt="Prévia">
+                                    <button type="button" class="btn btn-sm btn-danger" @click.stop="removeImage">
+                                        <i class="bi bi-trash me-1"></i> Remover
+                                    </button>
+                                </div>
+                            </template>
                         </div>
-                        {% endif %}
+
+                        <input type="file" name="imagem" class="d-none" accept="image/*" @change="handleImageUpload"
+                            x-ref="fileInput">
                     </div>
 
-                    <!-- Campo: Título -->
-                    <div class="form-group">
-                        <label for="{{ form.titulo.id_for_label }}" class="form-label">
-                            {{ form.titulo.label }}
-                        </label>
-                        {{ form.titulo }}
-                        {% if form.titulo.help_text %}
-                        <small class="form-text text-muted">
-                            <i class="bi bi-info-circle me-1"></i>
-                            {{ form.titulo.help_text }}
-                        </small>
-                        {% endif %}
-                    </div>
-
-                    <!-- Campo: Conteúdo -->
-                    <div class="form-group">
-                        <label for="{{ form.conteudo.id_for_label }}" class="form-label">
-                            {{ form.conteudo.label }}
-                        </label>
-                        {{ form.conteudo }}
-                        {% if form.conteudo.help_text %}
-                        <small class="form-text text-muted">
-                            <i class="bi bi-info-circle me-1"></i>
-                            {{ form.conteudo.help_text }}
-                        </small>
-                        {% endif %}
-                    </div>
-
-                    <!-- Campo: Imagem -->
-                    <div class="form-group">
-                        <label for="{{ form.imagem.id_for_label }}" class="form-label">
-                            {{ form.imagem.label }}
-                            <span class="text-muted small">(opcional)</span>
-                        </label>
-                        
-                        <div class="image-preview-container" onclick="document.getElementById('image-upload').click();">
-                            <div id="upload-icon" class="mb-3">
-                                <i class="bi bi-cloud-arrow-up"></i>
-                            </div>
-                            <div>
-                                <p class="mb-2 text-muted">
-                                    Clique para selecionar uma imagem ou arraste e solte aqui
-                                </p>
-                                <p class="small text-muted mb-0">
-                                    Formatos suportados: JPG, PNG, GIF<br>
-                                    Tamanho máximo: 5MB
-                                </p>
-                            </div>
-                            <img id="image-preview" class="image-preview" alt="Prévia da imagem">
-                        </div>
-                        
-                        <input type="file" id="image-upload" name="imagem" class="form-control d-none" 
-                               accept="image/*" onchange="previewImage(this);">
-                        
-                        {% if form.imagem.help_text %}
-                        <small class="form-text text-muted">
-                            <i class="bi bi-info-circle me-1"></i>
-                            {{ form.imagem.help_text }}
-                        </small>
-                        {% endif %}
-                    </div>
-
-                    <!-- Campo: Publicado -->
+                    <!-- Publicado -->
                     <div class="form-group">
                         <div class="form-check form-switch">
-                            {{ form.publicado }}
-                            <label class="form-check-label" for="{{ form.publicado.id_for_label }}">
-                                {{ form.publicado.label }}
-                            </label>
+                            <input type="checkbox" name="publicado" class="form-check-input" x-model="publicado">
+                            <label class="form-check-label">Publicar imediatamente</label>
                         </div>
-                        {% if form.publicado.help_text %}
-                        <small class="form-text text-muted d-block mt-1">
-                            <i class="bi bi-info-circle me-1"></i>
-                            {{ form.publicado.help_text }}
-                        </small>
-                        {% endif %}
                     </div>
 
-                    <!-- Botões de ação -->
+                    <!-- Botões -->
                     <div class="d-flex gap-3 mt-5 pt-3 border-top">
-                        <button id="submit-post" type="submit" 
-                                class="btn btn-primary-rc px-4 py-2 d-flex align-items-center"
-                                onclick="handleFormSubmit()">
-                            <span id="submit-text">Salvar Postagem</span>
-                            <span id="submit-indicator" class="spinner-border spinner-border-sm ms-2" 
-                                  role="status" style="display: none;"></span>
+                        <button type="submit" class="btn btn-primary-rc px-4 py-2" :disabled="loading">
+                            <span x-text="loading ? 'Processando...' : 'Salvar Postagem'"></span>
                         </button>
-                        
+
                         <a href="{% url 'blog:postagem-lista' %}" class="btn btn-outline-primary-rc px-4 py-2">
                             Cancelar
                         </a>
@@ -201,122 +234,8 @@
                 <li>Divida o conteúdo em parágrafos curtos</li>
                 <li>Adicione imagens relevantes para ilustrar seu texto</li>
                 <li>Revise o conteúdo antes de publicar</li>
-                <li>Se não publicar imediatamente, a postagem ficará como rascunho</li>
             </ul>
         </div>
     </div>
 </div>
-
-<script>
-function previewImage(input) {
-    const preview = document.getElementById('image-preview');
-    const uploadIcon = document.getElementById('upload-icon');
-    
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            preview.src = e.target.result;
-            preview.style.display = 'block';
-            uploadIcon.style.display = 'none';
-            
-            // Mostrar o container e o preview
-            document.querySelector('.image-preview-container').innerHTML = '';
-            document.querySelector('.image-preview-container').appendChild(preview);
-            
-            // Adicionar botão para remover imagem
-            const removeBtn = document.createElement('button');
-            removeBtn.type = 'button';
-            removeBtn.className = 'btn btn-sm btn-danger mt-2';
-            removeBtn.innerHTML = '<i class="bi bi-trash me-1"></i> Remover imagem';
-            removeBtn.onclick = function() {
-                input.value = '';
-                preview.style.display = 'none';
-                document.querySelector('.image-preview-container').innerHTML = `
-                    <div id="upload-icon" class="mb-3">
-                        <i class="bi bi-cloud-arrow-up"></i>
-                    </div>
-                    <div>
-                        <p class="mb-2 text-muted">
-                            Clique para selecionar uma imagem ou arraste e solte aqui
-                        </p>
-                        <p class="small text-muted mb-0">
-                            Formatos suportados: JPG, PNG, GIF<br>
-                            Tamanho máximo: 5MB
-                        </p>
-                    </div>
-                    <img id="image-preview" class="image-preview" alt="Prévia da imagem" style="display: none;">
-                `;
-            };
-            
-            const container = document.querySelector('.image-preview-container');
-            container.appendChild(preview);
-            
-            const btnContainer = document.createElement('div');
-            btnContainer.className = 'mt-3';
-            btnContainer.appendChild(removeBtn);
-            container.appendChild(btnContainer);
-        };
-        
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
-// Handlers de submit do formulário
-function handleFormSubmit() {
-    const form = document.getElementById('post-form');
-    const submitBtn = document.getElementById('submit-post');
-    const submitText = document.getElementById('submit-text');
-    const indicator = document.getElementById('submit-indicator');
-    
-    // Validação básica do formulário
-    const titulo = document.querySelector('input[name="titulo"]');
-    const conteudo = document.querySelector('textarea[name="conteudo"]');
-    
-    let isValid = true;
-    let errorMessage = '';
-    
-    // Validação do título
-    if (!titulo.value.trim()) {
-        isValid = false;
-        errorMessage = 'O título é obrigatório';
-        titulo.classList.add('is-invalid');
-    } else {
-        titulo.classList.remove('is-invalid');
-    }
-    
-    // Validação do conteúdo
-    if (!conteudo.value.trim()) {
-        isValid = false;
-        errorMessage = errorMessage || 'O conteúdo é obrigatório';
-        conteudo.classList.add('is-invalid');
-    } else {
-        conteudo.classList.remove('is-invalid');
-    }
-    
-    if (!isValid) {
-        // Mostrar mensagem de erro
-        const messageDiv = document.getElementById('form-messages');
-        messageDiv.innerHTML = `
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="bi bi-exclamation-circle me-2"></i>
-                <strong>Erro de validação:</strong> ${errorMessage}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        `;
-        return false;
-    }
-    
-    // Feedback visual durante o processamento
-    if (submitBtn) {
-        submitBtn.disabled = true;
-        submitText.textContent = 'Processando...';
-        indicator.style.display = 'inline-block';
-    }
-    
-    // Submeter o formulário
-    form.submit();
-    return true;
-}
-</script>
 {% endblock %}
