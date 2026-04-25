@@ -14,7 +14,7 @@ def listar_postagens(request):
 
 def postagem_detalhe(request, slug):
     """Detalhes de postagem específica pelo slug"""
-    post = get_object_or_404(Post, slug=slug, publicado=True)
+    post = get_object_or_404(Post, slug=slug)
     context = {"post": post}
     return render(request, "blog/post_detail.html", context)
 

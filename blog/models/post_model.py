@@ -10,7 +10,7 @@ def caminho_imagem_capa(instance, filename):
     autor = instance.autor
     post_id = instance.id
 
-    return f"capas/{autor}/{post_id}/{filename}"
+    return f"uploads/avatar/{autor}/{post_id}/{filename}"
 
 
 class Post(models.Model):
