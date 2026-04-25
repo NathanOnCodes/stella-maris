@@ -2,6 +2,8 @@ import uuid
 import time
 from django.db import models
 from django.utils.text import slugify
+from django.conf import settings
+
 
 
 def caminho_imagem_capa(instance, filename):
@@ -14,7 +16,7 @@ def caminho_imagem_capa(instance, filename):
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     autor = models.ForeignKey(
-        "auth.User", on_delete=models.SET_NULL, null=True, blank=True
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
     )
     titulo = models.CharField(max_length=125)
     conteudo = models.TextField()
