@@ -1,1 +1,0 @@
-export type { User, Session, Account } from '~~/server/database/schema'
