@@ -9,5 +9,6 @@ dependencies = [
     "django-cors-headers>=4.9.0",
     "django-ninja>=1.6.2",
     "django-ninja-jwt>=5.4.4",
+    "pillow>=12.3.0",
     "python-dotenv>=1.2.2",
 ]
