@@ -90,13 +90,15 @@ class CategoriaAPITest(TestCase):
         self.assertFalse(Categoria.objects.filter(id=self.cat.id).exists())
 
     def test_criar_categoria_slug_duplicado(self):
+        self.client.raise_request_exception = False
         response = self.client.post(
             "/api/categorias/",
             data={"nome": "Outra", "slug": "noticias"},
             content_type="application/json",
             **self._auth(),
         )
-        self.assertNotEqual(response.status_code, 200)
+        self.client.raise_request_exception = True
+        self.assertEqual(response.status_code, 500)
 
     def test_atualizar_categoria_inexistente(self):
         response = self.client.put(

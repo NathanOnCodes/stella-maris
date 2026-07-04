@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.utils.text import slugify
 from django.utils.timezone import now
 
@@ -17,7 +18,10 @@ def listar_publicacoes_publicas():
     return (
         Publicacao.objects.select_related("autor", "categoria")
         .prefetch_related("tags")
-        .filter(status=PUBLICADO, data_publicacao__lte=now())
+        .filter(
+            status=PUBLICADO,
+        )
+        .filter(Q(data_publicacao__lte=now()) | Q(data_publicacao__isnull=True))
         .order_by("-data_publicacao")
     )
 
@@ -26,7 +30,11 @@ def buscar_publicacao_por_slug(slug: str) -> Publicacao:
     publicacao = (
         Publicacao.objects.select_related("autor", "categoria")
         .prefetch_related("tags")
-        .filter(slug=slug, status=PUBLICADO, data_publicacao__lte=now())
+        .filter(
+            slug=slug,
+            status=PUBLICADO,
+        )
+        .filter(Q(data_publicacao__lte=now()) | Q(data_publicacao__isnull=True))
         .first()
     )
     if publicacao is None:

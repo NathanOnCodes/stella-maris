@@ -235,15 +235,17 @@ class PublicacaoServiceTest(TestCase):
                 {
                     "titulo": f"Publicação {i}",
                     "slug": f"pub-n-{i}",
+                    "status": PUBLICADO,
                     "categoria_id": self.categoria.id,
                     "tag_ids": [self.tag.id, tag2.id],
                 },
             )
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(2):
             resultado = list(listar_publicacoes_publicas())
-            self.assertEqual(len(resultado), 6)
+            self.assertEqual(len(resultado), 5)
 
     def test_listar_admin_sem_n_mais_um(self):
+        tag2 = Tag.objects.create(nome="Latim2", slug="latim2-svc2")
         for i in range(5):
             criar_publicacao(
                 self.admin,
@@ -251,9 +253,9 @@ class PublicacaoServiceTest(TestCase):
                     "titulo": f"Admin Pub {i}",
                     "slug": f"admin-pub-n-{i}",
                     "categoria_id": self.categoria.id,
-                    "tag_ids": [],
+                    "tag_ids": [self.tag.id, tag2.id],
                 },
             )
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(2):
             resultado = list(listar_publicacoes_admin(self.admin))
-            self.assertEqual(len(resultado), 6)
+            self.assertEqual(len(resultado), 5)

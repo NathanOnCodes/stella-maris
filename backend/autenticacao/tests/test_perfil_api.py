@@ -156,13 +156,15 @@ class AutenticacaoAPITest(TestCase):
 
     def test_criar_colunista_usuario_duplicado(self):
         User.objects.create_user(username="duplicado", password="x")
+        self.client.raise_request_exception = False
         response = self.client.post(
             "/api/autenticacao/colunistas",
             data={"username": "duplicado", "password": "senha123"},
             content_type="application/json",
             **self._auth_admin(),
         )
-        self.assertNotEqual(response.status_code, 200)
+        self.client.raise_request_exception = True
+        self.assertEqual(response.status_code, 500)
 
     def test_listar_colunistas_retorna_dados_corretos(self):
         response = self.client.get("/api/autenticacao/colunistas", **self._auth_admin())

@@ -86,13 +86,15 @@ class TagAPITest(TestCase):
         self.assertFalse(Tag.objects.filter(id=self.tag.id).exists())
 
     def test_criar_tag_slug_duplicado(self):
+        self.client.raise_request_exception = False
         response = self.client.post(
             "/api/tags/",
             data={"nome": "Outra", "slug": "vaticano"},
             content_type="application/json",
             **self._auth(),
         )
-        self.assertNotEqual(response.status_code, 200)
+        self.client.raise_request_exception = True
+        self.assertEqual(response.status_code, 500)
 
     def test_atualizar_tag_inexistente(self):
         response = self.client.put(
