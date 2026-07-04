@@ -22,7 +22,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
+    "ninja_extra",
     "ninja_jwt",
+    "autenticacao",
 ]
 
 MIDDLEWARE = [

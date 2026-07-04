@@ -1,11 +1,13 @@
 from http import HTTPStatus
 
 from django.http import HttpRequest
-from ninja import NinjaAPI
+from ninja_extra import NinjaExtraAPI
+from ninja_jwt.controller import NinjaJWTDefaultController
 
+from autenticacao.api.perfil_routes import router as autenticacao_router
 from core.exceptions import ErroBaseVoxRC, PermissaoNegada, RegistroNaoEncontrado
 
-api = NinjaAPI(
+api = NinjaExtraAPI(
     title="Vox Regina Caeli API",
     version="1.0.0",
     description="API REST da revista digital católica Vox Regina Caeli",
@@ -46,3 +48,7 @@ def handler_erro_base(request: HttpRequest, exc: ErroBaseVoxRC):
         {"detail": exc.detalhe},
         status=exc.codigo_http,
     )
+
+
+api.register_controllers(NinjaJWTDefaultController)
+api.add_router("/autenticacao", autenticacao_router)
