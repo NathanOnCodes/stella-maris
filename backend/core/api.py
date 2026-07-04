@@ -7,6 +7,7 @@ from ninja_jwt.controller import NinjaJWTDefaultController
 from autenticacao.api.perfil_routes import router as autenticacao_router
 from categorias.api.categoria_routes import router as categorias_router
 from tags.api.tag_routes import router as tags_router
+from publicacoes.api.publicacao_routes import router as publicacoes_router
 from core.exceptions import ErroBaseVoxRC, PermissaoNegada, RegistroNaoEncontrado
 
 api = NinjaExtraAPI(
@@ -56,3 +57,4 @@ api.register_controllers(NinjaJWTDefaultController)
 api.add_router("/autenticacao", autenticacao_router)
 api.add_router("/categorias", categorias_router)
 api.add_router("/tags", tags_router)
+api.add_router("/publicacoes", publicacoes_router)
