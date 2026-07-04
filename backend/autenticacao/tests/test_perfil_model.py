@@ -1,7 +1,10 @@
+from http import HTTPStatus
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 
 from autenticacao.models.perfil_model import ADMINISTRADOR, COLUNISTA, Perfil
+from core.exceptions import ErroBaseVoxRC, PermissaoNegada, RegistroNaoEncontrado
 
 
 class PerfilModelTest(TestCase):
@@ -28,3 +31,34 @@ class PerfilModelTest(TestCase):
         usuario = User.objects.create_user(username="unico", password="senha123")
         self.assertEqual(usuario.perfil.usuario_id, usuario.id)
         self.assertIn("unico", str(usuario.perfil))
+
+
+class CoreExceptionsTest(TestCase):
+    def test_erro_base_default_detalhe(self):
+        exc = ErroBaseVoxRC()
+        self.assertEqual(exc.detalhe, "Erro interno do servidor.")
+        self.assertEqual(exc.codigo_http, HTTPStatus.INTERNAL_SERVER_ERROR)
+
+    def test_erro_base_detalhe_personalizado(self):
+        exc = ErroBaseVoxRC("Falha crítica no sistema.")
+        self.assertEqual(exc.detalhe, "Falha crítica no sistema.")
+        self.assertEqual(str(exc), "Falha crítica no sistema.")
+
+    def test_registro_nao_encontrado_default(self):
+        exc = RegistroNaoEncontrado()
+        self.assertEqual(exc.codigo_http, HTTPStatus.NOT_FOUND)
+        self.assertEqual(exc.detalhe, "Registro não encontrado.")
+
+    def test_registro_nao_encontrado_personalizado(self):
+        exc = RegistroNaoEncontrado("Categoria inexistente.")
+        self.assertEqual(exc.detalhe, "Categoria inexistente.")
+
+    def test_permissao_negada_default(self):
+        exc = PermissaoNegada()
+        self.assertEqual(exc.codigo_http, HTTPStatus.FORBIDDEN)
+
+    def test_permissao_negada_personalizada(self):
+        exc = PermissaoNegada("Apenas administradores podem executar esta ação.")
+        self.assertEqual(
+            exc.detalhe, "Apenas administradores podem executar esta ação."
+        )

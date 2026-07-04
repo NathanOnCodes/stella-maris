@@ -116,3 +116,20 @@ class PerfilServiceTest(TestCase):
         usuario = criar_admin("super", "secret", "super@exemplo.com")
         self.assertEqual(usuario.username, "super")
         self.assertTrue(usuario.perfil.eh_administrador)
+
+    def test_atualizar_colunista_email(self):
+        usuario = self._criar_colunista("email")
+        resultado = atualizar_colunista(
+            self.admin, usuario.id, {"email": "novo@email.com"}
+        )
+        self.assertEqual(resultado["email"], "novo@email.com")
+
+    def test_atualizar_colunista_senha(self):
+        usuario = self._criar_colunista("password")
+        atualizar_colunista(self.admin, usuario.id, {"password": "nova-senha123"})
+        usuario.refresh_from_db()
+        self.assertTrue(usuario.check_password("nova-senha123"))
+
+    def test_atualizar_colunista_inexistente(self):
+        with self.assertRaises(RegistroNaoEncontrado):
+            atualizar_colunista(self.admin, 9999, {"username": "x"})

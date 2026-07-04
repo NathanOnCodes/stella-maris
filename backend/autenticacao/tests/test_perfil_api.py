@@ -75,6 +75,10 @@ class AutenticacaoAPITest(TestCase):
             **self._auth_admin(),
         )
         self.assertEqual(response.status_code, 200)
+        login_antiga = self._obter_tokens("admin", "admin123")
+        self.assertNotIn("access", login_antiga)
+        login_nova = self._obter_tokens("admin", "nova456")
+        self.assertIn("access", login_nova)
 
     def test_listar_colunistas_como_admin(self):
         response = self.client.get("/api/autenticacao/colunistas", **self._auth_admin())
@@ -116,3 +120,74 @@ class AutenticacaoAPITest(TestCase):
             **self._auth_admin(),
         )
         self.assertEqual(response.status_code, 204)
+
+    def test_token_pair_usuario_inexistente(self):
+        response = self.client.post(
+            "/api/token/pair",
+            data={"username": "fantasma", "password": "x"},
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 401)
+
+    def test_token_refresh_com_token_invalido(self):
+        response = self.client.post(
+            "/api/token/refresh",
+            data={"refresh": "token-invalido-aqui"},
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 401)
+
+    def test_alterar_senha_sem_auth_retorna_401(self):
+        response = self.client.put(
+            "/api/autenticacao/me/alterar-senha",
+            data={"senha_atual": "x", "senha_nova": "y"},
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 401)
+
+    def test_alterar_senha_atual_incorreta(self):
+        response = self.client.put(
+            "/api/autenticacao/me/alterar-senha",
+            data={"senha_atual": "errada", "senha_nova": "nova456"},
+            content_type="application/json",
+            **self._auth_admin(),
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_criar_colunista_usuario_duplicado(self):
+        User.objects.create_user(username="duplicado", password="x")
+        response = self.client.post(
+            "/api/autenticacao/colunistas",
+            data={"username": "duplicado", "password": "senha123"},
+            content_type="application/json",
+            **self._auth_admin(),
+        )
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_listar_colunistas_retorna_dados_corretos(self):
+        response = self.client.get("/api/autenticacao/colunistas", **self._auth_admin())
+        self.assertEqual(response.status_code, 200)
+        dados = response.json()
+        self.assertIsInstance(dados, list)
+        self.assertEqual(dados[0]["username"], "colunista")
+        self.assertEqual(dados[0]["tipo"], "colunista")
+
+    def test_atualizar_colunista_como_admin(self):
+        alvo = User.objects.create_user(username="alvo_update", password="x")
+        response = self.client.put(
+            f"/api/autenticacao/colunistas/{alvo.id}",
+            data={"username": "alvo_renomeado"},
+            content_type="application/json",
+            **self._auth_admin(),
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["username"], "alvo_renomeado")
+
+    def test_atualizar_colunista_inexistente(self):
+        response = self.client.put(
+            "/api/autenticacao/colunistas/9999",
+            data={"username": "x"},
+            content_type="application/json",
+            **self._auth_admin(),
+        )
+        self.assertEqual(response.status_code, 404)
