@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     "ninja_jwt",
     "autenticacao",
     "categorias",
+    "tags",
 ]
 
 MIDDLEWARE = [
