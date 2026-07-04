@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.test import TestCase
 
 from categorias.models.categoria_model import Categoria
@@ -61,3 +62,15 @@ class CategoriaServiceTest(TestCase):
     def test_deletar_categoria_inexistente(self):
         with self.assertRaises(RegistroNaoEncontrado):
             deletar_categoria(9999)
+
+    def test_criar_categoria_slug_duplicado(self):
+        with self.assertRaises(IntegrityError):
+            criar_categoria({"nome": "Outra", "slug": "noticias", "descricao": ""})
+
+    def test_atualizar_categoria_regenera_slug_do_novo_nome(self):
+        cat = atualizar_categoria(self.cat.id, {"nome": "Nova Categoria", "slug": None})
+        self.assertEqual(cat.slug, "nova-categoria")
+
+    def test_atualizar_categoria_inexistente(self):
+        with self.assertRaises(RegistroNaoEncontrado):
+            atualizar_categoria(9999, {"nome": "X"})

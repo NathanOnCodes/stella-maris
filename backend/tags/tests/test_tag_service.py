@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.test import TestCase
 
 from core.exceptions import RegistroNaoEncontrado
@@ -51,3 +52,15 @@ class TagServiceTest(TestCase):
     def test_deletar_tag_inexistente(self):
         with self.assertRaises(RegistroNaoEncontrado):
             deletar_tag(9999)
+
+    def test_criar_tag_slug_duplicado(self):
+        with self.assertRaises(IntegrityError):
+            criar_tag({"nome": "Outra", "slug": "vaticano"})
+
+    def test_atualizar_tag_regenera_slug_do_novo_nome(self):
+        tag = atualizar_tag(self.tag.id, {"nome": "Santa Sé Roma", "slug": None})
+        self.assertEqual(tag.slug, "santa-se-roma")
+
+    def test_atualizar_tag_inexistente(self):
+        with self.assertRaises(RegistroNaoEncontrado):
+            atualizar_tag(9999, {"nome": "X"})

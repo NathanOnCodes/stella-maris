@@ -84,3 +84,28 @@ class TagAPITest(TestCase):
         )
         self.assertEqual(response.status_code, 204)
         self.assertFalse(Tag.objects.filter(id=self.tag.id).exists())
+
+    def test_criar_tag_slug_duplicado(self):
+        response = self.client.post(
+            "/api/tags/",
+            data={"nome": "Outra", "slug": "vaticano"},
+            content_type="application/json",
+            **self._auth(),
+        )
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_atualizar_tag_inexistente(self):
+        response = self.client.put(
+            "/api/tags/9999",
+            data={"nome": "X"},
+            content_type="application/json",
+            **self._auth(),
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_deletar_tag_inexistente_retorna_404(self):
+        response = self.client.delete(
+            "/api/tags/9999",
+            **self._auth(),
+        )
+        self.assertEqual(response.status_code, 404)
