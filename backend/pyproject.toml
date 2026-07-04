@@ -1,0 +1,13 @@
+[project]
+name = "vox-regina-caeli"
+version = "0.1.0"
+description = "Back-end da revista digital católica Vox Regina Caeli"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=5.2,<5.3",
+    "django-cors-headers>=4.9.0",
+    "django-ninja>=1.6.2",
+    "django-ninja-jwt>=5.4.4",
+    "python-dotenv>=1.2.2",
+]
