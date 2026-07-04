@@ -150,3 +150,46 @@ class PublicacaoAPITest(TestCase):
         slugs = [p["slug"] for p in dados]
         self.assertIn("so-minha", slugs)
         self.assertNotIn("publicada", slugs)
+
+    def test_deletar_sem_auth_retorna_401(self):
+        response = self.client.delete(f"/api/publicacoes/admin/{self.publicada.id}")
+        self.assertEqual(response.status_code, 401)
+
+    def test_publicar_rascunho(self):
+        response = self.client.put(
+            f"/api/publicacoes/admin/{self.rascunho.id}",
+            data={"status": "publicado", "data_publicacao": None},
+            content_type="application/json",
+            **self._auth(),
+        )
+        self.assertEqual(response.status_code, 200)
+        resposta = self.client.get("/api/publicacoes/rascunho")
+        self.assertEqual(resposta.status_code, 200)
+
+    def test_arquivar_publicacao(self):
+        response = self.client.put(
+            f"/api/publicacoes/admin/{self.publicada.id}",
+            data={"status": "arquivado"},
+            content_type="application/json",
+            **self._auth(),
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["status"], "arquivado")
+
+    def test_admin_ve_publicacao_futura_por_id(self):
+        response = self.client.get(
+            f"/api/publicacoes/admin/{self.futura.id}", **self._auth()
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["slug"], "futura")
+
+    def test_criar_publicacao_sem_categoria_sem_tags(self):
+        response = self.client.post(
+            "/api/publicacoes/admin/",
+            data={"titulo": "Minimalista", "slug": "minimalista"},
+            content_type="application/json",
+            **self._auth(),
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["categoria_id"], None)
+        self.assertEqual(len(response.json()["tags"]), 0)

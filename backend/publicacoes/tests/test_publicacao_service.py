@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 from django.test import TestCase
 from django.utils.timezone import now
 
@@ -163,3 +164,96 @@ class PublicacaoServiceTest(TestCase):
     def test_buscar_por_id_inexistente(self):
         with self.assertRaises(RegistroNaoEncontrado):
             buscar_publicacao_por_id(9999)
+
+    def test_criar_publicacao_slug_duplicado(self):
+        with self.assertRaises(IntegrityError):
+            criar_publicacao(
+                self.admin,
+                {
+                    "titulo": "Outra",
+                    "slug": self._criar(titulo="Primeira", slug="primeira-ns").slug,
+                    "categoria_id": self.categoria.id,
+                },
+            )
+
+    def test_criar_publicacao_categoria_inexistente(self):
+        with self.assertRaises(RegistroNaoEncontrado):
+            criar_publicacao(
+                self.admin,
+                {"titulo": "Inválida", "slug": "invalida-s", "categoria_id": 9999},
+            )
+
+    def test_criar_publicacao_tag_inexistente(self):
+        with self.assertRaises(RegistroNaoEncontrado):
+            criar_publicacao(
+                self.admin,
+                {
+                    "titulo": "Com tag ruim",
+                    "slug": "tag-ruim-s",
+                    "categoria_id": self.categoria.id,
+                    "tag_ids": [9999],
+                },
+            )
+
+    def test_criar_publicacao_sem_categoria(self):
+        p = criar_publicacao(
+            self.admin,
+            {"titulo": "Sem Categoria", "slug": "sem-cat", "categoria_id": None},
+        )
+        self.assertIsNone(p.categoria)
+
+    def test_atualizar_publicacao_limpa_tags(self):
+        tag2 = Tag.objects.create(nome="Latim", slug="latim")
+        p = criar_publicacao(
+            self.admin,
+            {
+                "titulo": "Com tags",
+                "slug": "limpa-tags-s",
+                "categoria_id": self.categoria.id,
+                "tag_ids": [self.tag.id, tag2.id],
+            },
+        )
+        self.assertEqual(p.tags.count(), 2)
+        atualizada = atualizar_publicacao(self.admin, p.id, {"tag_ids": []})
+        self.assertEqual(atualizada.tags.count(), 0)
+
+    def test_atualizar_publicacao_data_publicacao_para_none(self):
+        p = self._criar(titulo="Data None", slug="data-none-s")
+        self.assertIsNotNone(p.data_publicacao)
+        atualizada = atualizar_publicacao(self.admin, p.id, {"data_publicacao": None})
+        self.assertIsNone(atualizada.data_publicacao)
+
+    def test_atualizar_publicacao_inexistente(self):
+        with self.assertRaises(RegistroNaoEncontrado):
+            atualizar_publicacao(self.admin, 9999, {"titulo": "X"})
+
+    def test_listar_publicas_sem_n_mais_um(self):
+        tag2 = Tag.objects.create(nome="Latim", slug="latim-svc2")
+        for i in range(5):
+            criar_publicacao(
+                self.admin,
+                {
+                    "titulo": f"Publicação {i}",
+                    "slug": f"pub-n-{i}",
+                    "categoria_id": self.categoria.id,
+                    "tag_ids": [self.tag.id, tag2.id],
+                },
+            )
+        with self.assertNumQueries(3):
+            resultado = list(listar_publicacoes_publicas())
+            self.assertEqual(len(resultado), 6)
+
+    def test_listar_admin_sem_n_mais_um(self):
+        for i in range(5):
+            criar_publicacao(
+                self.admin,
+                {
+                    "titulo": f"Admin Pub {i}",
+                    "slug": f"admin-pub-n-{i}",
+                    "categoria_id": self.categoria.id,
+                    "tag_ids": [],
+                },
+            )
+        with self.assertNumQueries(3):
+            resultado = list(listar_publicacoes_admin(self.admin))
+            self.assertEqual(len(resultado), 6)
