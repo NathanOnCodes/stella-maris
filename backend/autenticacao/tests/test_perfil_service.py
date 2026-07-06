@@ -2,15 +2,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 
 from autenticacao.models.perfil_model import ADMINISTRADOR, COLUNISTA
-from autenticacao.services.perfil_service import (
-    alterar_senha,
-    atualizar_colunista,
-    criar_admin,
-    criar_usuario_colunista,
-    deletar_colunista,
-    listar_colunistas,
-    obter_perfil_do_usuario,
-)
+from autenticacao.services.perfil_service import AutenticacaoService
 from core.exceptions import PermissaoNegada, RegistroNaoEncontrado
 
 
@@ -24,7 +16,9 @@ class PerfilServiceTest(TestCase):
         )
 
     def _criar_colunista(self, username="teste"):
-        return criar_usuario_colunista(self.admin, username, "senha123")
+        return AutenticacaoService.criar_usuario_colunista(
+            self.admin, username, "senha123"
+        )
 
     def test_criar_colunista_retorna_usuario(self):
         usuario = self._criar_colunista("joao")
@@ -33,12 +27,14 @@ class PerfilServiceTest(TestCase):
 
     def test_criar_colunista_por_nao_admin_bloqueado(self):
         with self.assertRaises(PermissaoNegada):
-            criar_usuario_colunista(self.colunista, "x", "senha123")
+            AutenticacaoService.criar_usuario_colunista(
+                self.colunista, "x", "senha123"
+            )
 
     def test_listar_colunistas_retorna_apenas_colunistas(self):
         self._criar_colunista("c1")
         self._criar_colunista("c2")
-        resultado = listar_colunistas(self.admin)
+        resultado = AutenticacaoService.listar_colunistas(self.admin)
         self.assertFalse(any(c["eh_administrador"] for c in resultado))
         usernames = [c["username"] for c in resultado]
         self.assertIn("c1", usernames)
@@ -47,16 +43,16 @@ class PerfilServiceTest(TestCase):
 
     def test_listar_colunistas_nao_inclui_admin(self):
         self._criar_colunista("c1")
-        resultado = listar_colunistas(self.admin)
+        resultado = AutenticacaoService.listar_colunistas(self.admin)
         usernames = [c["username"] for c in resultado]
         self.assertNotIn("admin", usernames)
 
     def test_listar_colunistas_por_nao_admin_bloqueado(self):
         with self.assertRaises(PermissaoNegada):
-            listar_colunistas(self.colunista)
+            AutenticacaoService.listar_colunistas(self.colunista)
 
     def test_obter_perfil(self):
-        perfil = obter_perfil_do_usuario(self.admin)
+        perfil = AutenticacaoService.obter_perfil_do_usuario(self.admin)
         self.assertEqual(perfil["username"], "admin")
         self.assertEqual(perfil["tipo"], ADMINISTRADOR)
         self.assertTrue(perfil["eh_administrador"])
@@ -66,70 +62,82 @@ class PerfilServiceTest(TestCase):
         usuario.perfil.delete()
         usuario = User.objects.get(id=usuario.id)
         with self.assertRaises(RegistroNaoEncontrado):
-            obter_perfil_do_usuario(usuario)
+            AutenticacaoService.obter_perfil_do_usuario(usuario)
 
     def test_atualizar_colunista(self):
         usuario = self._criar_colunista("original")
-        resultado = atualizar_colunista(
+        resultado = AutenticacaoService.atualizar_colunista(
             self.admin, usuario.id, {"username": "alterado"}
         )
         self.assertEqual(resultado["username"], "alterado")
 
     def test_atualizar_admin_bloqueado(self):
         with self.assertRaises(PermissaoNegada):
-            atualizar_colunista(self.admin, self.admin.id, {"username": "x"})
+            AutenticacaoService.atualizar_colunista(
+                self.admin, self.admin.id, {"username": "x"}
+            )
 
     def test_atualizar_por_nao_admin_bloqueado(self):
         usuario = self._criar_colunista("alvo")
         with self.assertRaises(PermissaoNegada):
-            atualizar_colunista(self.colunista, usuario.id, {"username": "x"})
+            AutenticacaoService.atualizar_colunista(
+                self.colunista, usuario.id, {"username": "x"}
+            )
 
     def test_deletar_colunista(self):
         usuario = self._criar_colunista("removivel")
-        deletar_colunista(self.admin, usuario.id)
+        AutenticacaoService.deletar_colunista(self.admin, usuario.id)
         self.assertFalse(User.objects.filter(id=usuario.id).exists())
 
     def test_deletar_admin_bloqueado(self):
         with self.assertRaises(PermissaoNegada):
-            deletar_colunista(self.admin, self.admin.id)
+            AutenticacaoService.deletar_colunista(self.admin, self.admin.id)
 
     def test_deletar_por_nao_admin_bloqueado(self):
         with self.assertRaises(PermissaoNegada):
-            deletar_colunista(self.colunista, self.colunista.id)
+            AutenticacaoService.deletar_colunista(
+                self.colunista, self.colunista.id
+            )
 
     def test_deletar_inexistente_lanca_erro(self):
         with self.assertRaises(RegistroNaoEncontrado):
-            deletar_colunista(self.admin, 9999)
+            AutenticacaoService.deletar_colunista(self.admin, 9999)
 
     def test_alterar_senha_sucesso(self):
         usuario = self._criar_colunista("senha")
-        alterar_senha(usuario, "senha123", "nova123")
+        AutenticacaoService.alterar_senha(usuario, "senha123", "nova123")
         usuario.refresh_from_db()
         self.assertTrue(usuario.check_password("nova123"))
 
     def test_alterar_senha_atual_incorreta(self):
         usuario = self._criar_colunista("senha")
         with self.assertRaises(PermissaoNegada):
-            alterar_senha(usuario, "errada", "nova123")
+            AutenticacaoService.alterar_senha(usuario, "errada", "nova123")
 
     def test_criar_admin(self):
-        usuario = criar_admin("super", "secret", "super@exemplo.com")
+        usuario = AutenticacaoService.criar_admin(
+            "super", "secret", "super@exemplo.com"
+        )
         self.assertEqual(usuario.username, "super")
         self.assertTrue(usuario.perfil.eh_administrador)
 
     def test_atualizar_colunista_email(self):
         usuario = self._criar_colunista("email")
-        resultado = atualizar_colunista(
+        resultado = AutenticacaoService.atualizar_colunista(
             self.admin, usuario.id, {"email": "novo@email.com"}
         )
         self.assertEqual(resultado["email"], "novo@email.com")
 
     def test_atualizar_colunista_senha(self):
         usuario = self._criar_colunista("password")
-        atualizar_colunista(self.admin, usuario.id, {"password": "nova-senha123"})
+        AutenticacaoService.atualizar_colunista(
+            self.admin, usuario.id, {"password": "nova-senha123"}
+        )
         usuario.refresh_from_db()
         self.assertTrue(usuario.check_password("nova-senha123"))
 
     def test_atualizar_colunista_inexistente(self):
         with self.assertRaises(RegistroNaoEncontrado):
-            atualizar_colunista(self.admin, 9999, {"username": "x"})
+            AutenticacaoService.atualizar_colunista(
+                self.admin, 9999, {"username": "x"}
+            )
