@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.utils.text import slugify
 from django.utils.timezone import now
 
-from categorias.services.categoria_service import buscar_categoria_por_id
+from categorias.services.categoria_service import CategoriaService
 from core.exceptions import PermissaoNegada, RegistroNaoEncontrado
 from publicacoes.models.publicacao_model import (
     ARQUIVADO,
@@ -11,7 +11,7 @@ from publicacoes.models.publicacao_model import (
     RASCUNHO,
     Publicacao,
 )
-from tags.services.tag_service import buscar_tag_por_id
+from tags.services.tag_service import TagService
 
 
 def listar_publicacoes_publicas():
@@ -66,7 +66,7 @@ def criar_publicacao(autor: User, dados: dict) -> Publicacao:
     slug = dados.get("slug") or slugify(dados["titulo"])
     categoria = None
     if dados.get("categoria_id"):
-        categoria = buscar_categoria_por_id(dados["categoria_id"])
+        categoria = CategoriaService.buscar_categoria_por_id(dados["categoria_id"])
     tag_ids = dados.get("tag_ids", [])
     publicacao = Publicacao.objects.create(
         titulo=dados["titulo"],
@@ -79,7 +79,7 @@ def criar_publicacao(autor: User, dados: dict) -> Publicacao:
         categoria=categoria,
     )
     for tag_id in tag_ids:
-        tag = buscar_tag_por_id(tag_id)
+        tag = TagService.buscar_tag_por_id(tag_id)
         publicacao.tags.add(tag)
     return publicacao
 
@@ -104,11 +104,11 @@ def atualizar_publicacao(
     if "data_publicacao" in dados:
         publicacao.data_publicacao = dados.get("data_publicacao")
     if "categoria_id" in dados and dados["categoria_id"] is not None:
-        publicacao.categoria = buscar_categoria_por_id(dados["categoria_id"])
+        publicacao.categoria = CategoriaService.buscar_categoria_por_id(dados["categoria_id"])
     if "tag_ids" in dados and dados["tag_ids"] is not None:
         publicacao.tags.clear()
         for tag_id in dados["tag_ids"]:
-            tag = buscar_tag_por_id(tag_id)
+            tag = TagService.buscar_tag_por_id(tag_id)
             publicacao.tags.add(tag)
     publicacao.save()
     return publicacao
