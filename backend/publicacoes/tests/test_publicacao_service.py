@@ -13,15 +13,7 @@ from publicacoes.models.publicacao_model import (
     RASCUNHO,
     Publicacao,
 )
-from publicacoes.services.publicacao_service import (
-    atualizar_publicacao,
-    buscar_publicacao_por_id,
-    buscar_publicacao_por_slug,
-    criar_publicacao,
-    deletar_publicacao,
-    listar_publicacoes_admin,
-    listar_publicacoes_publicas,
-)
+from publicacoes.services.publicacao_service import PublicacaoService
 from tags.models.tag_model import Tag
 
 
@@ -47,13 +39,13 @@ class PublicacaoServiceTest(TestCase):
             "categoria_id": kwargs.get("categoria_id", self.categoria.id),
             "tag_ids": kwargs.get("tag_ids", [self.tag.id]),
         }
-        return criar_publicacao(autor or self.admin, dados)
+        return PublicacaoService.criar_publicacao(autor or self.admin, dados)
 
     def test_publicas_retorna_apenas_publicadas(self):
         self._criar(titulo="Visível", slug="visivel")
         self._criar(titulo="Rascunho", slug="rascunho-svc", status=RASCUNHO)
         self._criar(titulo="Arquivada", slug="arquivada-svc", status=ARQUIVADO)
-        publicas = listar_publicacoes_publicas()
+        publicas = PublicacaoService.listar_publicacoes_publicas()
         titulos = [p.titulo for p in publicas]
         self.assertIn("Visível", titulos)
         self.assertNotIn("Rascunho", titulos)
@@ -65,13 +57,15 @@ class PublicacaoServiceTest(TestCase):
             slug="futura-svc",
             data_publicacao=now() + timedelta(days=7),
         )
-        publicas = listar_publicacoes_publicas()
+        publicas = PublicacaoService.listar_publicacoes_publicas()
         titulos = [p.titulo for p in publicas]
         self.assertNotIn("Futura", titulos)
 
     def test_buscar_por_slug_publica_encontra(self):
         p = self._criar(titulo="Encontrada", slug="encontrada-svc")
-        encontrada = buscar_publicacao_por_slug("encontrada-svc")
+        encontrada = PublicacaoService.buscar_publicacao_por_slug(
+            "encontrada-svc"
+        )
         self.assertEqual(encontrada.id, p.id)
 
     def test_buscar_por_slug_rascunho_lanca_404(self):
@@ -82,58 +76,82 @@ class PublicacaoServiceTest(TestCase):
             data_publicacao=None,
         )
         with self.assertRaises(RegistroNaoEncontrado):
-            buscar_publicacao_por_slug("invisivel-svc")
+            PublicacaoService.buscar_publicacao_por_slug("invisivel-svc")
 
     def test_admin_lista_todas(self):
         self._criar(titulo="Admin Pub", slug="admin-pub")
-        self._criar(autor=self.colunista_a, titulo="Col A Pub", slug="col-a-pub")
-        resultado = listar_publicacoes_admin(self.admin)
+        self._criar(
+            autor=self.colunista_a, titulo="Col A Pub", slug="col-a-pub"
+        )
+        resultado = PublicacaoService.listar_publicacoes_admin(self.admin)
         self.assertEqual(resultado.count(), 2)
 
     def test_colunista_lista_apenas_suas(self):
-        self._criar(autor=self.colunista_a, titulo="Minha", slug="minha-svc")
-        self._criar(autor=self.colunista_b, titulo="Outra", slug="outra-svc")
-        resultado = listar_publicacoes_admin(self.colunista_a)
+        self._criar(
+            autor=self.colunista_a, titulo="Minha", slug="minha-svc"
+        )
+        self._criar(
+            autor=self.colunista_b, titulo="Outra", slug="outra-svc"
+        )
+        resultado = PublicacaoService.listar_publicacoes_admin(
+            self.colunista_a
+        )
         titulos = [p.titulo for p in resultado]
         self.assertIn("Minha", titulos)
         self.assertNotIn("Outra", titulos)
 
     def test_colunista_nao_edita_alheia(self):
-        p = self._criar(autor=self.colunista_a, titulo="Do A", slug="do-a")
+        p = self._criar(
+            autor=self.colunista_a, titulo="Do A", slug="do-a"
+        )
         with self.assertRaises(PermissaoNegada):
-            atualizar_publicacao(self.colunista_b, p.id, {"titulo": "Hackeado"})
+            PublicacaoService.atualizar_publicacao(
+                self.colunista_b, p.id, {"titulo": "Hackeado"}
+            )
 
     def test_colunista_edita_sua_propria(self):
-        p = self._criar(autor=self.colunista_a, titulo="Do A", slug="do-a-alt")
-        atualizada = atualizar_publicacao(
+        p = self._criar(
+            autor=self.colunista_a, titulo="Do A", slug="do-a-alt"
+        )
+        atualizada = PublicacaoService.atualizar_publicacao(
             self.colunista_a, p.id, {"titulo": "Editado por A"}
         )
         self.assertEqual(atualizada.titulo, "Editado por A")
 
     def test_admin_edita_qualquer(self):
-        p = self._criar(autor=self.colunista_a, titulo="Do A", slug="do-a-edit")
-        atualizada = atualizar_publicacao(
+        p = self._criar(
+            autor=self.colunista_a, titulo="Do A", slug="do-a-edit"
+        )
+        atualizada = PublicacaoService.atualizar_publicacao(
             self.admin, p.id, {"titulo": "Editado pelo Admin"}
         )
         self.assertEqual(atualizada.titulo, "Editado pelo Admin")
 
     def test_colunista_nao_deleta_alheia(self):
-        p = self._criar(autor=self.colunista_a, titulo="Alheia", slug="alheia")
+        p = self._criar(
+            autor=self.colunista_a, titulo="Alheia", slug="alheia"
+        )
         with self.assertRaises(PermissaoNegada):
-            deletar_publicacao(self.colunista_b, p.id)
+            PublicacaoService.deletar_publicacao(
+                self.colunista_b, p.id
+            )
 
     def test_colunista_deleta_sua_propria(self):
-        p = self._criar(autor=self.colunista_a, titulo="Minha", slug="minha-del")
-        deletar_publicacao(self.colunista_a, p.id)
+        p = self._criar(
+            autor=self.colunista_a, titulo="Minha", slug="minha-del"
+        )
+        PublicacaoService.deletar_publicacao(self.colunista_a, p.id)
         self.assertFalse(Publicacao.objects.filter(id=p.id).exists())
 
     def test_admin_deleta_qualquer(self):
-        p = self._criar(autor=self.colunista_a, titulo="Alheia", slug="alheia-del")
-        deletar_publicacao(self.admin, p.id)
+        p = self._criar(
+            autor=self.colunista_a, titulo="Alheia", slug="alheia-del"
+        )
+        PublicacaoService.deletar_publicacao(self.admin, p.id)
         self.assertFalse(Publicacao.objects.filter(id=p.id).exists())
 
     def test_criar_publicacao_com_auto_slug(self):
-        p = criar_publicacao(
+        p = PublicacaoService.criar_publicacao(
             self.admin,
             {
                 "titulo": "Como Rezar o Terço",
@@ -145,7 +163,7 @@ class PublicacaoServiceTest(TestCase):
 
     def test_criar_publicacao_com_tags(self):
         tag2 = Tag.objects.create(nome="Latim", slug="latim")
-        p = criar_publicacao(
+        p = PublicacaoService.criar_publicacao(
             self.admin,
             {
                 "titulo": "Com Tags",
@@ -158,34 +176,40 @@ class PublicacaoServiceTest(TestCase):
 
     def test_buscar_por_id(self):
         p = self._criar(titulo="Busca", slug="busca-svc")
-        encontrada = buscar_publicacao_por_id(p.id)
+        encontrada = PublicacaoService.buscar_publicacao_por_id(p.id)
         self.assertEqual(encontrada.titulo, "Busca")
 
     def test_buscar_por_id_inexistente(self):
         with self.assertRaises(RegistroNaoEncontrado):
-            buscar_publicacao_por_id(9999)
+            PublicacaoService.buscar_publicacao_por_id(9999)
 
     def test_criar_publicacao_slug_duplicado(self):
         with self.assertRaises(IntegrityError):
-            criar_publicacao(
+            PublicacaoService.criar_publicacao(
                 self.admin,
                 {
                     "titulo": "Outra",
-                    "slug": self._criar(titulo="Primeira", slug="primeira-ns").slug,
+                    "slug": self._criar(
+                        titulo="Primeira", slug="primeira-ns"
+                    ).slug,
                     "categoria_id": self.categoria.id,
                 },
             )
 
     def test_criar_publicacao_categoria_inexistente(self):
         with self.assertRaises(RegistroNaoEncontrado):
-            criar_publicacao(
+            PublicacaoService.criar_publicacao(
                 self.admin,
-                {"titulo": "Inválida", "slug": "invalida-s", "categoria_id": 9999},
+                {
+                    "titulo": "Inválida",
+                    "slug": "invalida-s",
+                    "categoria_id": 9999,
+                },
             )
 
     def test_criar_publicacao_tag_inexistente(self):
         with self.assertRaises(RegistroNaoEncontrado):
-            criar_publicacao(
+            PublicacaoService.criar_publicacao(
                 self.admin,
                 {
                     "titulo": "Com tag ruim",
@@ -196,15 +220,19 @@ class PublicacaoServiceTest(TestCase):
             )
 
     def test_criar_publicacao_sem_categoria(self):
-        p = criar_publicacao(
+        p = PublicacaoService.criar_publicacao(
             self.admin,
-            {"titulo": "Sem Categoria", "slug": "sem-cat", "categoria_id": None},
+            {
+                "titulo": "Sem Categoria",
+                "slug": "sem-cat",
+                "categoria_id": None,
+            },
         )
         self.assertIsNone(p.categoria)
 
     def test_atualizar_publicacao_limpa_tags(self):
         tag2 = Tag.objects.create(nome="Latim", slug="latim")
-        p = criar_publicacao(
+        p = PublicacaoService.criar_publicacao(
             self.admin,
             {
                 "titulo": "Com tags",
@@ -214,23 +242,29 @@ class PublicacaoServiceTest(TestCase):
             },
         )
         self.assertEqual(p.tags.count(), 2)
-        atualizada = atualizar_publicacao(self.admin, p.id, {"tag_ids": []})
+        atualizada = PublicacaoService.atualizar_publicacao(
+            self.admin, p.id, {"tag_ids": []}
+        )
         self.assertEqual(atualizada.tags.count(), 0)
 
     def test_atualizar_publicacao_data_publicacao_para_none(self):
         p = self._criar(titulo="Data None", slug="data-none-s")
         self.assertIsNotNone(p.data_publicacao)
-        atualizada = atualizar_publicacao(self.admin, p.id, {"data_publicacao": None})
+        atualizada = PublicacaoService.atualizar_publicacao(
+            self.admin, p.id, {"data_publicacao": None}
+        )
         self.assertIsNone(atualizada.data_publicacao)
 
     def test_atualizar_publicacao_inexistente(self):
         with self.assertRaises(RegistroNaoEncontrado):
-            atualizar_publicacao(self.admin, 9999, {"titulo": "X"})
+            PublicacaoService.atualizar_publicacao(
+                self.admin, 9999, {"titulo": "X"}
+            )
 
     def test_listar_publicas_sem_n_mais_um(self):
         tag2 = Tag.objects.create(nome="Latim", slug="latim-svc2")
         for i in range(5):
-            criar_publicacao(
+            PublicacaoService.criar_publicacao(
                 self.admin,
                 {
                     "titulo": f"Publicação {i}",
@@ -241,13 +275,15 @@ class PublicacaoServiceTest(TestCase):
                 },
             )
         with self.assertNumQueries(2):
-            resultado = list(listar_publicacoes_publicas())
+            resultado = list(
+                PublicacaoService.listar_publicacoes_publicas()
+            )
             self.assertEqual(len(resultado), 5)
 
     def test_listar_admin_sem_n_mais_um(self):
         tag2 = Tag.objects.create(nome="Latim2", slug="latim2-svc2")
         for i in range(5):
-            criar_publicacao(
+            PublicacaoService.criar_publicacao(
                 self.admin,
                 {
                     "titulo": f"Admin Pub {i}",
@@ -257,5 +293,7 @@ class PublicacaoServiceTest(TestCase):
                 },
             )
         with self.assertNumQueries(2):
-            resultado = list(listar_publicacoes_admin(self.admin))
+            resultado = list(
+                PublicacaoService.listar_publicacoes_admin(self.admin)
+            )
             self.assertEqual(len(resultado), 5)
