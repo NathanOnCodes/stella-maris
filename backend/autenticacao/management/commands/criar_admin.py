@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from autenticacao.services.perfil_service import criar_admin
+from autenticacao.services.perfil_service import AutenticacaoService
 
 
 class Command(BaseCommand):
@@ -18,7 +18,9 @@ class Command(BaseCommand):
             self.stderr.write("Senha é obrigatória.")
             return
         try:
-            usuario = criar_admin(username=username, password=password, email=email)
+            usuario = AutenticacaoService.criar_admin(
+                username=username, password=password, email=email
+            )
             self.stdout.write(
                 self.style.SUCCESS(
                     f"Administrador '{usuario.username}' criado com sucesso."
