@@ -37,6 +37,42 @@ class TagAPITest(TestCase):
         response = self.client.get("/api/tags/9999")
         self.assertEqual(response.status_code, 404)
 
+    def _auth_colunista(self):
+        colunista = User.objects.create_user(
+            username="colun", password="col123"
+        )
+        response = self.client.post(
+            "/api/token/pair",
+            data={"username": "colun", "password": "col123"},
+            content_type="application/json",
+        )
+        return {"HTTP_AUTHORIZATION": f"Bearer {response.json()['access']}"}
+
+    def test_criar_colunista_retorna_403(self):
+        response = self.client.post(
+            "/api/tags/",
+            data={"nome": "X", "slug": "x"},
+            content_type="application/json",
+            **self._auth_colunista(),
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_atualizar_colunista_retorna_403(self):
+        response = self.client.put(
+            f"/api/tags/{self.tag.id}",
+            data={"nome": "X"},
+            content_type="application/json",
+            **self._auth_colunista(),
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_deletar_colunista_retorna_403(self):
+        response = self.client.delete(
+            f"/api/tags/{self.tag.id}",
+            **self._auth_colunista(),
+        )
+        self.assertEqual(response.status_code, 403)
+
     def test_criar_sem_auth_retorna_401(self):
         response = self.client.post(
             "/api/tags/",
