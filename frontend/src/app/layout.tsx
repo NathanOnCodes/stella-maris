@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Libre_Bodoni, Libre_Baskerville, Public_Sans } from "next/font/google";
+import { SerwistProviderWrapper } from "@/components/serwist-provider-wrapper";
 import "./globals.css";
 
 const display = Libre_Bodoni({
@@ -47,7 +48,9 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${display.variable} ${leitura.variable} ${ui.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <SerwistProviderWrapper>{children}</SerwistProviderWrapper>
+      </body>
     </html>
   );
 }
