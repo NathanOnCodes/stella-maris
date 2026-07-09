@@ -1,10 +1,13 @@
+from pathlib import Path
+
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import UploadedFile
 from django.db.models import Q
 from django.utils.text import slugify
 from django.utils.timezone import now
 
 from categorias.services.categoria_service import CategoriaService
-from core.exceptions import PermissaoNegada, RegistroNaoEncontrado
+from core.exceptions import ErroBaseVoxRC, PermissaoNegada, RegistroNaoEncontrado
 from publicacoes.models.publicacao_model import (
     ARQUIVADO,
     PUBLICADO,
@@ -12,6 +15,9 @@ from publicacoes.models.publicacao_model import (
     Publicacao,
 )
 from tags.services.tag_service import TagService
+
+EXTENSOES_CAPA_PERMITIDAS = {".jpg", ".jpeg", ".png", ".webp"}
+TAMANHO_MAXIMO_CAPA_BYTES = 5 * 1024 * 1024
 
 
 class PublicacaoService:
@@ -127,6 +133,34 @@ class PublicacaoService:
         publicacao = PublicacaoService.buscar_publicacao_por_id(publicacao_id)
         PublicacaoService._validar_propriedade(solicitante, publicacao)
         publicacao.delete()
+
+    @staticmethod
+    def definir_imagem_capa(
+        solicitante: User, publicacao_id: int, arquivo: UploadedFile
+    ) -> Publicacao:
+        publicacao = PublicacaoService.buscar_publicacao_por_id(publicacao_id)
+        PublicacaoService._validar_propriedade(solicitante, publicacao)
+        extensao = Path(arquivo.name).suffix.lower()
+        if extensao not in EXTENSOES_CAPA_PERMITIDAS:
+            raise ErroBaseVoxRC(
+                f"Formato '{extensao}' não permitido. Use: {', '.join(EXTENSOES_CAPA_PERMITIDAS)}"
+            )
+        if arquivo.size > TAMANHO_MAXIMO_CAPA_BYTES:
+            raise ErroBaseVoxRC(
+                f"Arquivo excede o limite de {TAMANHO_MAXIMO_CAPA_BYTES // (1024 * 1024)} MB."
+            )
+        publicacao.imagem_capa.save(arquivo.name, arquivo, save=True)
+        return publicacao
+
+    @staticmethod
+    def remover_imagem_capa(
+        solicitante: User, publicacao_id: int
+    ) -> Publicacao:
+        publicacao = PublicacaoService.buscar_publicacao_por_id(publicacao_id)
+        PublicacaoService._validar_propriedade(solicitante, publicacao)
+        if publicacao.imagem_capa:
+            publicacao.imagem_capa.delete(save=True)
+        return publicacao
 
     @staticmethod
     def _validar_propriedade(
