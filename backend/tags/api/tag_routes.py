@@ -20,16 +20,16 @@ def obter(request, tag_id: int):
 
 @router.post("/", response=TagOut, auth=auth)
 def criar(request, payload: TagIn):
-    return TagService.criar_tag(payload.model_dump())
+    return TagService.criar_tag(request.auth, payload.model_dump())
 
 
 @router.put("/{tag_id}", response=TagOut, auth=auth)
 def atualizar(request, tag_id: int, payload: TagUpdate):
     dados = {k: v for k, v in payload.model_dump().items() if v is not None}
-    return TagService.atualizar_tag(tag_id, dados)
+    return TagService.atualizar_tag(request.auth, tag_id, dados)
 
 
 @router.delete("/{tag_id}", response={204: None}, auth=auth)
 def deletar(request, tag_id: int):
-    TagService.deletar_tag(tag_id)
+    TagService.deletar_tag(request.auth, tag_id)
     return 204, None
