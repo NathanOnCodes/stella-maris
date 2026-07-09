@@ -1,5 +1,7 @@
+from django.contrib.auth.models import User
 from django.utils.text import slugify
 
+from core.decorators import requer_admin
 from core.exceptions import RegistroNaoEncontrado
 from tags.models.tag_model import Tag
 
@@ -17,12 +19,14 @@ class TagService:
             raise RegistroNaoEncontrado("Tag não encontrada.")
 
     @staticmethod
-    def criar_tag(dados: dict) -> Tag:
+    @requer_admin
+    def criar_tag(solicitante: User, dados: dict) -> Tag:
         slug = dados.get("slug") or slugify(dados["nome"])
         return Tag.objects.create(nome=dados["nome"], slug=slug)
 
     @staticmethod
-    def atualizar_tag(tag_id: int, dados: dict) -> Tag:
+    @requer_admin
+    def atualizar_tag(solicitante: User, tag_id: int, dados: dict) -> Tag:
         tag = TagService.buscar_tag_por_id(tag_id)
         if "nome" in dados and dados["nome"] is not None:
             tag.nome = dados["nome"]
@@ -34,6 +38,7 @@ class TagService:
         return tag
 
     @staticmethod
-    def deletar_tag(tag_id: int) -> None:
+    @requer_admin
+    def deletar_tag(solicitante: User, tag_id: int) -> None:
         tag = TagService.buscar_tag_por_id(tag_id)
         tag.delete()
