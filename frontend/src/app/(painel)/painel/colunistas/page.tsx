@@ -41,7 +41,10 @@ export default function ColunistasPage() {
     if (res.ok) setColunistas(await res.json());
   }
 
-  useEffect(() => { carregar(); }, []);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    carregar();
+  }, []);
 
   async function onSubmit(data: z.infer<typeof schema>) {
     setErro("");

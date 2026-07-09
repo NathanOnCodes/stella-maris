@@ -1,7 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { API_BASE_URL, ROTAS } from "@/lib/constantes";
-import { ApiError } from "@/lib/api-client";
 
 export async function POST(
   request: Request,

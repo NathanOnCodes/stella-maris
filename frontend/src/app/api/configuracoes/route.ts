@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminGet, adminPut } from "@/lib/fetch-admin";
+import { adminPut } from "@/lib/fetch-admin";
 import { ApiError } from "@/lib/api-client";
 import { API_BASE_URL, ROTAS } from "@/lib/constantes";
 

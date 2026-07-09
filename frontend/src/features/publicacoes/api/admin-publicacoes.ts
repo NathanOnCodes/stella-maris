@@ -1,6 +1,6 @@
-import { adminGet, adminPost, adminPut, adminDelete } from "@/lib/fetch-admin";
+import { adminGet } from "@/lib/fetch-admin";
 import { ROTAS } from "@/lib/constantes";
-import type { Publicacao, PublicacaoResumo } from "@/features/publicacoes/types";
+import type { PublicacaoResumo } from "@/features/publicacoes/types";
 
 export async function listarPublicacoesAdmin(): Promise<PublicacaoResumo[]> {
   return adminGet<PublicacaoResumo[]>(ROTAS.PUBLICACOES_ADMIN);

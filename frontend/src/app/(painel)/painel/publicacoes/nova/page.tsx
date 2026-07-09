@@ -24,6 +24,7 @@ export default function NovaPublicacaoPage() {
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState("");
   const [categorias, setCategorias] = useState<{ id: number; nome: string }[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [tags, setTags] = useState<{ id: number; nome: string }[]>([]);
 
   const form = useForm({

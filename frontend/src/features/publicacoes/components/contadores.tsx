@@ -20,12 +20,8 @@ function Contador({ valor, rotulo }: Estatistica) {
 
   useEffect(() => {
     if (!emVista) return;
-    if (reduzirMovimento) {
-      setExibido(valor);
-      return;
-    }
     const controls = animate(0, valor, {
-      duration: 1.6,
+      duration: reduzirMovimento ? 0 : 1.6,
       ease: [0.22, 1, 0.36, 1],
       onUpdate: (v) => setExibido(Math.round(v)),
     });
