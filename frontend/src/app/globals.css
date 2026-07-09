@@ -80,6 +80,14 @@
   --sidebar-accent-foreground: oklch(0.98 0 0);
   --sidebar-border: oklch(0.9 0 0);
   --sidebar-ring: oklch(0.65 0.05 35);
+  --gradiente-pagina-de: oklch(1 0 0);
+  --gradiente-pagina-ate: oklch(0.97 0.008 40);
+  --aurora-1: oklch(0.35 0.08 35);
+  --aurora-2: oklch(0.28 0.09 25);
+  --aurora-3: oklch(0.55 0.12 45);
+  --aurora-4: oklch(0.7 0.13 65);
+  --neon-vinho: oklch(0.55 0.15 30);
+  --neon-dourado: oklch(0.78 0.14 70);
 }
 
 .dark {
@@ -114,6 +122,14 @@
   --sidebar-accent-foreground: oklch(0.98 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.65 0.05 35);
+  --gradiente-pagina-de: oklch(0.13 0 0);
+  --gradiente-pagina-ate: oklch(0.16 0.02 30);
+  --aurora-1: oklch(0.28 0.09 25);
+  --aurora-2: oklch(0.22 0.08 20);
+  --aurora-3: oklch(0.4 0.1 45);
+  --aurora-4: oklch(0.5 0.11 65);
+  --neon-vinho: oklch(0.6 0.16 30);
+  --neon-dourado: oklch(0.8 0.14 70);
 }
 
 @layer base {
@@ -128,5 +144,144 @@
   }
   article, .prose {
     @apply font-leitura;
+  }
+}
+
+@layer utilities {
+  .fundo-degrade-pagina {
+    background:
+      radial-gradient(
+        60rem 60rem at 50% -10%,
+        color-mix(in oklch, var(--aurora-4) 8%, transparent),
+        transparent 60%
+      ),
+      linear-gradient(
+        to bottom,
+        var(--gradiente-pagina-de),
+        var(--gradiente-pagina-ate)
+      );
+  }
+
+  .hero-aurora {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background:
+      linear-gradient(
+        135deg,
+        var(--aurora-1),
+        var(--aurora-2) 40%,
+        var(--aurora-3) 75%,
+        var(--aurora-4)
+      );
+    background-size: 300% 300%;
+    animation: aurora-mover 18s ease-in-out infinite;
+  }
+
+  .hero-aurora::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(
+        40rem 30rem at 15% 20%,
+        color-mix(in oklch, var(--aurora-4) 30%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        35rem 25rem at 85% 80%,
+        color-mix(in oklch, var(--neon-vinho) 25%, transparent),
+        transparent 70%
+      );
+    animation: aurora-brilho 12s ease-in-out infinite alternate;
+  }
+
+  .texto-neon {
+    text-shadow:
+      0 0 8px color-mix(in oklch, var(--neon-vinho) 55%, transparent),
+      0 0 22px color-mix(in oklch, var(--neon-vinho) 35%, transparent),
+      0 0 40px color-mix(in oklch, var(--neon-dourado) 22%, transparent);
+    animation: pulsar-neon 4s ease-in-out infinite;
+  }
+
+  .link-neon {
+    transition:
+      color 200ms ease,
+      text-shadow 200ms ease;
+  }
+
+  .link-neon:hover {
+    text-shadow:
+      0 0 6px color-mix(in oklch, var(--neon-dourado) 60%, transparent),
+      0 0 16px color-mix(in oklch, var(--neon-dourado) 40%, transparent);
+  }
+
+  .borda-neon-inferior {
+    position: relative;
+  }
+
+  .borda-neon-inferior::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--neon-vinho),
+      var(--neon-dourado),
+      var(--neon-vinho),
+      transparent
+    );
+    box-shadow: 0 0 12px color-mix(in oklch, var(--neon-dourado) 45%, transparent);
+  }
+}
+
+@keyframes aurora-mover {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes aurora-brilho {
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.9;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes pulsar-neon {
+  0%,
+  100% {
+    text-shadow:
+      0 0 8px color-mix(in oklch, var(--neon-vinho) 45%, transparent),
+      0 0 22px color-mix(in oklch, var(--neon-vinho) 28%, transparent),
+      0 0 40px color-mix(in oklch, var(--neon-dourado) 18%, transparent);
+  }
+  50% {
+    text-shadow:
+      0 0 10px color-mix(in oklch, var(--neon-vinho) 60%, transparent),
+      0 0 28px color-mix(in oklch, var(--neon-vinho) 40%, transparent),
+      0 0 52px color-mix(in oklch, var(--neon-dourado) 28%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-aurora,
+  .hero-aurora::after,
+  .texto-neon {
+    animation: none !important;
   }
 }
