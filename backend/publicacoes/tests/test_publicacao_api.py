@@ -245,3 +245,49 @@ class PublicacaoAPITest(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertIsNone(response.json()["imagem_capa"])
+
+    def test_filtro_por_categoria_retorna_correspondentes(self):
+        outra_cat = Categoria.objects.create(nome="Espiritualidade", slug="espiritualidade")
+        Publicacao.objects.create(
+            titulo="Oração",
+            slug="oracao",
+            autor=self.admin,
+            categoria=outra_cat,
+            status=PUBLICADO,
+            data_publicacao=now() - timedelta(hours=1),
+        )
+        response = self.client.get(
+            "/api/publicacoes/?categoria_slug=espiritualidade"
+        )
+        self.assertEqual(response.status_code, 200)
+        dados = response.json()
+        self.assertEqual(len(dados), 1)
+        self.assertEqual(dados[0]["slug"], "oracao")
+
+    def test_filtro_por_tag_retorna_correspondentes(self):
+        outra_tag = Tag.objects.create(nome="Papa", slug="papa")
+        outra = Publicacao.objects.create(
+            titulo="Notícia do Papa",
+            slug="noticia-papa",
+            autor=self.admin,
+            status=PUBLICADO,
+            data_publicacao=now() - timedelta(hours=1),
+        )
+        outra.tags.add(outra_tag)
+        response = self.client.get("/api/publicacoes/?tag_slug=papa")
+        self.assertEqual(response.status_code, 200)
+        dados = response.json()
+        self.assertEqual(len(dados), 1)
+        self.assertEqual(dados[0]["slug"], "noticia-papa")
+
+    def test_filtro_por_busca_retorna_correspondentes(self):
+        response = self.client.get("/api/publicacoes/?busca=publicada")
+        self.assertEqual(response.status_code, 200)
+        dados = response.json()
+        self.assertEqual(len(dados), 1)
+        self.assertEqual(dados[0]["slug"], "publicada")
+
+    def test_filtro_sem_resultados_retorna_lista_vazia(self):
+        response = self.client.get("/api/publicacoes/?busca=inexistente")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 0)
