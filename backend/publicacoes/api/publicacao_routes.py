@@ -15,10 +15,19 @@ auth = JWTAuth()
 
 
 @router.get("/", response=list[PublicacaoResumoOut])
-def listar_publicas(request):
+def listar_publicas(
+    request,
+    categoria_slug: str | None = None,
+    tag_slug: str | None = None,
+    busca: str | None = None,
+):
     return [
         PublicacaoService._publicacao_resumo_para_dict(p)
-        for p in PublicacaoService.listar_publicacoes_publicas()
+        for p in PublicacaoService.listar_publicacoes_publicas(
+            categoria_slug=categoria_slug,
+            tag_slug=tag_slug,
+            busca=busca,
+        )
     ]
 
 
