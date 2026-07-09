@@ -19,15 +19,18 @@ export function Cabecalho() {
 
   return (
     <header
-      className="relative flex flex-col items-center justify-center bg-cover bg-center px-4 py-20 text-white"
+      className="borda-neon-inferior relative flex flex-col items-center justify-center bg-cover bg-center px-4 py-20 text-white"
       style={{
         backgroundImage:
           "url('/background-nossa-senhora.jpeg')",
       }}
     >
-      <div className="absolute inset-0 bg-black/50" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/40" />
       <div className="relative z-10 flex w-full max-w-6xl items-center justify-between">
-        <Link href="/" className="text-2xl font-display font-bold tracking-tight">
+        <Link
+          href="/"
+          className="texto-neon text-2xl font-display font-bold tracking-tight"
+        >
           Vox Regina Caeli
         </Link>
         <nav className="hidden items-center gap-6 md:flex">
@@ -35,14 +38,17 @@ export function Cabecalho() {
             <Link
               key={cat.slug}
               href={`/${cat.slug}`}
-              className="text-sm font-ui font-medium uppercase tracking-wider text-white/90 transition-colors hover:text-white"
+              className="link-neon text-sm font-ui font-medium uppercase tracking-wider text-white/90 hover:text-white"
             >
               {cat.nome}
             </Link>
           ))}
         </nav>
         <Sheet open={aberto} onOpenChange={setAberto}>
-          <SheetTrigger className="flex md:hidden cursor-pointer items-center justify-center text-white">
+          <SheetTrigger
+            aria-label="Abrir menu"
+            className="flex md:hidden cursor-pointer items-center justify-center text-white"
+          >
             <Menu className="size-6" />
           </SheetTrigger>
           <SheetContent side="right" className="w-64 bg-foreground text-white">
@@ -52,7 +58,7 @@ export function Cabecalho() {
                   key={cat.slug}
                   href={`/${cat.slug}`}
                   onClick={() => setAberto(false)}
-                  className="text-lg font-medium uppercase tracking-wider text-white/80 transition-colors hover:text-white"
+                  className="link-neon text-lg font-medium uppercase tracking-wider text-white/80 hover:text-white"
                 >
                   {cat.nome}
                 </Link>
