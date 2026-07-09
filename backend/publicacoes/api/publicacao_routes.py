@@ -1,4 +1,5 @@
-from ninja import Router
+from ninja import File, Router
+from ninja.files import UploadedFile
 from ninja_jwt.authentication import JWTAuth
 
 from publicacoes.api.publicacao_schemas import (
@@ -54,6 +55,22 @@ def atualizar(request, publicacao_id: int, payload: PublicacaoUpdate):
     dados = {k: v for k, v in payload.model_dump().items() if v is not None}
     publicacao = PublicacaoService.atualizar_publicacao(
         request.auth, publicacao_id, dados
+    )
+    return PublicacaoService._publicacao_para_dict(publicacao)
+
+
+@router.post("/admin/{publicacao_id}/imagem", response=PublicacaoOut, auth=auth)
+def upload_imagem(request, publicacao_id: int, arquivo: UploadedFile = File(...)):
+    publicacao = PublicacaoService.definir_imagem_capa(
+        request.auth, publicacao_id, arquivo
+    )
+    return PublicacaoService._publicacao_para_dict(publicacao)
+
+
+@router.delete("/admin/{publicacao_id}/imagem", response=PublicacaoOut, auth=auth)
+def remover_imagem(request, publicacao_id: int):
+    publicacao = PublicacaoService.remover_imagem_capa(
+        request.auth, publicacao_id
     )
     return PublicacaoService._publicacao_para_dict(publicacao)
 
