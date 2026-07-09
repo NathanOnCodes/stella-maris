@@ -1,5 +1,6 @@
 import { listarPublicacoes } from "@/features/publicacoes/api/buscar-publicacoes";
 import { ListaPublicacoes } from "@/features/publicacoes/components/lista-publicacoes";
+import { HeroHome } from "@/features/publicacoes/components/hero-home";
 
 export const dynamic = "force-dynamic";
 
@@ -11,15 +12,10 @@ export default async function HomePage() {
 
   return (
     <section className="space-y-12">
-      <div className="space-y-4">
-        <h1 className="text-3xl font-display font-bold md:text-4xl">
-          Vox Regina Caeli
-        </h1>
-        <p className="max-w-2xl text-lg text-muted-foreground font-leitura leading-relaxed">
-          Revista digital católica independente. Notícias da Igreja,
-          espiritualidade, apologética e entrevistas.
-        </p>
-      </div>
+      <HeroHome
+        titulo="Vox Regina Caeli"
+        descricao="Revista digital católica independente. Notícias da Igreja, espiritualidade, apologética e entrevistas."
+      />
 
       <section className="space-y-4">
         <h2 className="text-2xl font-display font-semibold">Destaques</h2>
