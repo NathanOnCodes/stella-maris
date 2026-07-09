@@ -22,16 +22,28 @@ TAMANHO_MAXIMO_CAPA_BYTES = 5 * 1024 * 1024
 
 class PublicacaoService:
     @staticmethod
-    def listar_publicacoes_publicas():
-        return (
+    def listar_publicacoes_publicas(
+        categoria_slug: str | None = None,
+        tag_slug: str | None = None,
+        busca: str | None = None,
+    ):
+        queryset = (
             Publicacao.objects.select_related("autor", "categoria")
             .prefetch_related("tags")
             .filter(status=PUBLICADO)
             .filter(
                 Q(data_publicacao__lte=now()) | Q(data_publicacao__isnull=True)
             )
-            .order_by("-data_publicacao")
         )
+        if categoria_slug:
+            queryset = queryset.filter(categoria__slug=categoria_slug)
+        if tag_slug:
+            queryset = queryset.filter(tags__slug=tag_slug).distinct()
+        if busca:
+            queryset = queryset.filter(
+                Q(titulo__icontains=busca) | Q(subtitulo__icontains=busca)
+            )
+        return queryset.order_by("-data_publicacao")
 
     @staticmethod
     def buscar_publicacao_por_slug(slug: str) -> Publicacao:
