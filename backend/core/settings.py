@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "categorias",
     "tags",
     "publicacoes",
+    "configuracoes",
 ]
 
 MIDDLEWARE = [
