@@ -2,3 +2,6 @@
 AGENTS.md
 .opencode/
 .opencode.jsonc
+claude.md
+.codegraph/
+.rtk/
