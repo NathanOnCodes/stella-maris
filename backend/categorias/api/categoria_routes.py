@@ -24,16 +24,16 @@ def obter(request, categoria_id: int):
 
 @router.post("/", response=CategoriaOut, auth=auth)
 def criar(request, payload: CategoriaIn):
-    return CategoriaService.criar_categoria(payload.model_dump())
+    return CategoriaService.criar_categoria(request.auth, payload.model_dump())
 
 
 @router.put("/{categoria_id}", response=CategoriaOut, auth=auth)
 def atualizar(request, categoria_id: int, payload: CategoriaUpdate):
     dados = {k: v for k, v in payload.model_dump().items() if v is not None}
-    return CategoriaService.atualizar_categoria(categoria_id, dados)
+    return CategoriaService.atualizar_categoria(request.auth, categoria_id, dados)
 
 
 @router.delete("/{categoria_id}", response={204: None}, auth=auth)
 def deletar(request, categoria_id: int):
-    CategoriaService.deletar_categoria(categoria_id)
+    CategoriaService.deletar_categoria(request.auth, categoria_id)
     return 204, None
