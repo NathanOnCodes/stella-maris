@@ -9,8 +9,8 @@ export default function PublicoLayout({
   return (
     <>
       <Cabecalho />
-      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">
-        {children}
+      <main className="fundo-degrade-pagina flex-1">
+        <div className="mx-auto w-full max-w-4xl px-4 py-8">{children}</div>
       </main>
       <Rodape />
     </>
