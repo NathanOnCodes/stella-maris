@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "tags",
     "publicacoes",
     "configuracoes",
+    "metricas",
 ]
 
 MIDDLEWARE = [
