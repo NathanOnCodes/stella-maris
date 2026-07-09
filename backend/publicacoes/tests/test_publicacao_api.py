@@ -1,6 +1,8 @@
+import io
 from datetime import timedelta
 
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.utils.timezone import now
 
@@ -193,3 +195,53 @@ class PublicacaoAPITest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["categoria_id"], None)
         self.assertEqual(len(response.json()["tags"]), 0)
+
+    def test_upload_imagem_capa(self):
+        imagem = SimpleUploadedFile(
+            "capa.jpg", io.BytesIO(b"fake-image-data").read(), content_type="image/jpeg"
+        )
+        response = self.client.post(
+            f"/api/publicacoes/admin/{self.publicada.id}/imagem",
+            {"arquivo": imagem},
+            **self._auth(),
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.json()["imagem_capa"])
+
+    def test_upload_imagem_formato_invalido(self):
+        imagem = SimpleUploadedFile(
+            "capa.gif", io.BytesIO(b"fake-gif-data").read(), content_type="image/gif"
+        )
+        response = self.client.post(
+            f"/api/publicacoes/admin/{self.publicada.id}/imagem",
+            {"arquivo": imagem},
+            **self._auth(),
+        )
+        self.assertEqual(response.status_code, 500)
+
+    def test_upload_imagem_colunista_em_publicacao_alheia(self):
+        imagem = SimpleUploadedFile(
+            "capa.jpg", io.BytesIO(b"fake-image-data").read(), content_type="image/jpeg"
+        )
+        response = self.client.post(
+            f"/api/publicacoes/admin/{self.publicada.id}/imagem",
+            {"arquivo": imagem},
+            **self._auth("colunista", "col123"),
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_remover_imagem_capa(self):
+        imagem = SimpleUploadedFile(
+            "remover.jpg", io.BytesIO(b"fake-data").read(), content_type="image/jpeg"
+        )
+        self.client.post(
+            f"/api/publicacoes/admin/{self.publicada.id}/imagem",
+            {"arquivo": imagem},
+            **self._auth(),
+        )
+        response = self.client.delete(
+            f"/api/publicacoes/admin/{self.publicada.id}/imagem",
+            **self._auth(),
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.json()["imagem_capa"])
