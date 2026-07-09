@@ -8,6 +8,7 @@ from publicacoes.api.publicacao_schemas import (
     PublicacaoResumoOut,
     PublicacaoUpdate,
 )
+from metricas.services.metrica_service import MetricaService
 from publicacoes.services.publicacao_service import PublicacaoService
 
 router = Router(tags=["Publicações"])
@@ -34,6 +35,12 @@ def listar_publicas(
 @router.get("/{slug}", response=PublicacaoOut)
 def obter_publica(request, slug: str):
     publicacao = PublicacaoService.buscar_publicacao_por_slug(slug)
+    MetricaService.registrar_visualizacao(
+        publicacao,
+        ip=request.META.get("REMOTE_ADDR", ""),
+        user_agent=request.META.get("HTTP_USER_AGENT", ""),
+        referrer=request.META.get("HTTP_REFERER", ""),
+    )
     return PublicacaoService._publicacao_para_dict(publicacao)
 
 
