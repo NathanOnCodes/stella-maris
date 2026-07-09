@@ -1,6 +1,8 @@
+from django.contrib.auth.models import User
 from django.utils.text import slugify
 
 from categorias.models.categoria_model import Categoria
+from core.decorators import requer_admin
 from core.exceptions import RegistroNaoEncontrado
 
 
@@ -17,7 +19,8 @@ class CategoriaService:
             raise RegistroNaoEncontrado("Categoria não encontrada.")
 
     @staticmethod
-    def criar_categoria(dados: dict) -> Categoria:
+    @requer_admin
+    def criar_categoria(solicitante: User, dados: dict) -> Categoria:
         slug = dados.get("slug") or slugify(dados["nome"])
         return Categoria.objects.create(
             nome=dados["nome"],
@@ -26,7 +29,8 @@ class CategoriaService:
         )
 
     @staticmethod
-    def atualizar_categoria(categoria_id: int, dados: dict) -> Categoria:
+    @requer_admin
+    def atualizar_categoria(solicitante: User, categoria_id: int, dados: dict) -> Categoria:
         categoria = CategoriaService.buscar_categoria_por_id(categoria_id)
         if "nome" in dados and dados["nome"] is not None:
             categoria.nome = dados["nome"]
@@ -40,6 +44,7 @@ class CategoriaService:
         return categoria
 
     @staticmethod
-    def deletar_categoria(categoria_id: int) -> None:
+    @requer_admin
+    def deletar_categoria(solicitante: User, categoria_id: int) -> None:
         categoria = CategoriaService.buscar_categoria_por_id(categoria_id)
         categoria.delete()
