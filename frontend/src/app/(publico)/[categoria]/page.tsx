@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import { listarPublicacoes } from "@/features/publicacoes/api/buscar-publicacoes";
+import { mockListarPublicacoes } from "@/lib/mock";
 import { ListaPublicacoes } from "@/features/publicacoes/components/lista-publicacoes";
-
-export const dynamic = "force-dynamic";
 
 interface Props {
   params: Promise<{ categoria: string }>;
@@ -19,15 +17,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CategoriaPage({ params }: Props) {
   const { categoria } = await params;
-  const publicacoes = await listarPublicacoes({
-    categoria_slug: categoria,
-  }).catch(() => []);
+  const publicacoes = mockListarPublicacoes({ categoria_slug: categoria });
   const nome = categoria.charAt(0).toUpperCase() + categoria.slice(1);
 
   return (
-    <section className="space-y-6">
+    <section className="container mx-auto px-4 lg:px-8 py-8 space-y-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-display font-bold">{nome}</h1>
+        <h1 className="text-3xl font-display font-bold text-wine-900">{nome}</h1>
         <p className="text-muted-foreground font-leitura">
           Publicações na categoria {nome.toLowerCase()}.
         </p>
