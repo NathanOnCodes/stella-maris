@@ -286,6 +286,14 @@
   }
 }
 
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px #f9fafb inset !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 30px #ffffff inset !important;
+}
+
 @keyframes fadeInPage {
   to { opacity: 1; }
 }
