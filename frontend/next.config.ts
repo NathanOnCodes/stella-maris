@@ -14,6 +14,14 @@ const nextConfig: NextConfig = {
   env: {
     SERWIST_SUPPRESS_TURBOPACK_WARNING: "1",
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+    ],
+  },
 };
 
 export default withSerwist(nextConfig);

@@ -5,6 +5,14 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-wine-700: #722F37;
+  --color-wine-800: #5A1F26;
+  --color-wine-900: #421419;
+  --color-wine-950: #2A0C10;
+  --color-gold-400: #F1C40F;
+  --color-gold-500: #D4AF37;
+  --color-gold-600: #AA8C2C;
+  --shadow-neon-gold: 0 0 10px rgba(212, 175, 55, 0.7), 0 0 20px rgba(212, 175, 55, 0.5);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -278,10 +286,38 @@
   }
 }
 
+@keyframes fadeInPage {
+  to { opacity: 1; }
+}
+
+.reveal-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.reveal-up.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #2A0C10; }
+::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 4px; }
+
 @media (prefers-reduced-motion: reduce) {
+  body {
+    animation: none !important;
+    opacity: 1 !important;
+  }
   .hero-aurora,
   .hero-aurora::after,
-  .texto-neon {
+  .texto-neon,
+  .reveal-up {
     animation: none !important;
+    transition: none !important;
+  }
+  .reveal-up {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

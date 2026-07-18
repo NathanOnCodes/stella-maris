@@ -1,3 +1,4 @@
+import { Topbar } from "@/components/topbar";
 import { Cabecalho } from "@/components/cabecalho";
 import { Rodape } from "@/components/rodape";
 
@@ -8,10 +9,9 @@ export default function PublicoLayout({
 }) {
   return (
     <>
+      <Topbar />
       <Cabecalho />
-      <main className="fundo-degrade-pagina flex-1">
-        <div className="mx-auto w-full max-w-4xl px-4 py-8">{children}</div>
-      </main>
+      <main className="flex-1">{children}</main>
       <Rodape />
     </>
   );
