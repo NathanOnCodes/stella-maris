@@ -1,15 +1,62 @@
 import Link from "next/link";
-import { listarPublicacoes } from "@/features/publicacoes/api/buscar-publicacoes";
 import { HeroBanner } from "@/features/publicacoes/components/hero-banner";
 import { ListaPublicacoes } from "@/features/publicacoes/components/lista-publicacoes";
 import { QuoteSection } from "@/components/quote-section";
 import { Reveal } from "@/components/anim/reveal";
+import type { PublicacaoResumo } from "@/features/publicacoes/types";
 
-export const dynamic = "force-dynamic";
+const MOCK_PUBLICACOES: PublicacaoResumo[] = [
+  {
+    id: 1,
+    titulo: "A importância da Oração Mental segundo Santa Teresa D'Ávila",
+    subtitulo: "A oração não é outra coisa senão um trato de amizade com Aquele que sabemos que nos ama. Descubra os passos para a vida interior através dos ensinamentos da Doutora da Igreja.",
+    slug: "oracao-mental-santa-teresa",
+    imagem_capa: "https://images.unsplash.com/photo-1607584102179-8809f6e6ccf4?q=80&w=600&auto=format&fit=crop",
+    status: "publicado",
+    data_publicacao: "2026-07-15T10:00:00Z",
+    autor_nome: "Pe. João Paulo",
+    categoria_nome: "Santos & Mártires",
+    tags: [],
+  },
+  {
+    id: 2,
+    titulo: "Compreendendo o Catecismo da Igreja Católica",
+    subtitulo: "Uma análise estrutural sobre o documento promulgado por São João Paulo II e sua importância indispensável para a formação do cristão contra as heresias modernas.",
+    slug: "compreendendo-catecismo",
+    imagem_capa: "https://images.unsplash.com/photo-1572007797825-780996f8c857?q=80&w=600&auto=format&fit=crop",
+    status: "publicado",
+    data_publicacao: "2026-07-12T08:30:00Z",
+    autor_nome: "Prof. Marcelo Ribeiro",
+    categoria_nome: "Magistério",
+    tags: [],
+  },
+  {
+    id: 3,
+    titulo: "A historicidade da Ressurreição de Cristo",
+    subtitulo: "Argumentos fundamentados nas evidências históricas e nos escritos dos Padres Apostólicos para defender o núcleo da fé cristã frente ao ceticismo contemporâneo.",
+    slug: "historicidade-ressurreicao",
+    imagem_capa: "https://images.unsplash.com/photo-1544829728-e5cb9eedc20e?q=80&w=600&auto=format&fit=crop",
+    status: "publicado",
+    data_publicacao: "2026-07-10T14:00:00Z",
+    autor_nome: "Dr. Antônio Campos",
+    categoria_nome: "Apologética",
+    tags: [],
+  },
+  {
+    id: 4,
+    titulo: "A Virgem Maria e os tempos finais",
+    subtitulo: "O papel da Mãe de Deus no plano da salvação e sua presença materna nos momentos decisivos da história da Igreja.",
+    slug: "virgem-maria-tempos-finais",
+    imagem_capa: "https://images.unsplash.com/photo-1548625361-26c6ce7a2015?q=80&w=600&auto=format&fit=crop",
+    status: "publicado",
+    data_publicacao: "2026-07-08T09:00:00Z",
+    autor_nome: "Ir. Maria Clara",
+    categoria_nome: "Mariologia",
+    tags: [],
+  },
+];
 
-export default async function HomePage() {
-  const destaques = await listarPublicacoes().catch(() => []);
-
+export default function HomePage() {
   return (
     <>
       <Reveal>
@@ -43,7 +90,7 @@ export default async function HomePage() {
 
           <Reveal>
             <ListaPublicacoes
-              publicacoes={destaques}
+              publicacoes={MOCK_PUBLICACOES}
               vazia="Nenhuma publicação encontrada."
             />
           </Reveal>
