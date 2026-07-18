@@ -7,6 +7,7 @@ const CATEGORIAS = [
   { nome: "Apologética", slug: "apologetica" },
   { nome: "Entrevistas", slug: "entrevistas" },
   { nome: "Colunas", slug: "colunas" },
+  { nome: "Nossa Missão", slug: "nossa-missao" },
 ];
 
 export async function Rodape() {
@@ -57,31 +58,11 @@ export async function Rodape() {
               ))}
             </ul>
           </div>
-
-          <div>
-            <h3 className="text-white font-bold uppercase tracking-widest text-xs mb-4">Formação</h3>
-            <ul className="space-y-3 text-sm">
-              <li><a href="#" className="hover:text-gold-500 transition-colors">Patrística</a></li>
-              <li><a href="#" className="hover:text-gold-500 transition-colors">Magistério</a></li>
-              <li><a href="#" className="hover:text-gold-500 transition-colors">História da Igreja</a></li>
-              <li><a href="#" className="hover:text-gold-500 transition-colors">Cursos</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-white font-bold uppercase tracking-widest text-xs mb-4">Sobre o Site</h3>
-            <ul className="space-y-3 text-sm">
-              <li><a href="#" className="hover:text-gold-500 transition-colors">Nossa Missão</a></li>
-              <li><a href="#" className="hover:text-gold-500 transition-colors">Política de Privacidade</a></li>
-              <li><a href="#" className="hover:text-gold-500 transition-colors">Termos de Uso</a></li>
-              <li><a href="#" className="hover:text-gold-500 transition-colors">Fale Conosco</a></li>
-            </ul>
-          </div>
         </div>
 
         <div className="border-t border-wine-800 pt-8 mt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
           <p>&copy; {new Date().getFullYear()} {config?.nome_site ?? "Vox Regina Caeli"}. Todos os direitos reservados.</p>
-          <p className="font-serif italic mt-2 md:mt-0">&ldquo;Vox Regina Caeli, ad Jesum per Mariam&rdquo;</p>
+          <p className="font-serif italic mt-2 md:mt-0">&ldquo;Omnia ad gloriam Dei&rdquo;</p>
         </div>
       </div>
     </footer>
