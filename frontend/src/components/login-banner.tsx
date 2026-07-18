@@ -8,12 +8,12 @@ export function LoginBanner() {
       <div className="absolute inset-0 bg-gradient-to-t from-wine-950 via-wine-900/80 to-transparent" />
       <div className="relative z-20 p-12 max-w-lg text-center entrar-reveal">
         <Link href="/" className="inline-flex flex-col items-center group">
-          <div className="relative w-32 h-32 md:w-40 md:h-40 group-hover:scale-105 transition-transform duration-500 rounded-full p-1 bg-gradient-to-br from-gold-400 via-gold-600 to-yellow-900 shadow-[0_0_30px_rgba(212,175,55,0.3)]">
+          <div className="relative w-44 h-44 md:w-52 md:h-52 group-hover:scale-105 transition-transform duration-500 rounded-full p-1 bg-gradient-to-br from-gold-400 via-gold-600 to-yellow-900 shadow-[0_0_30px_rgba(212,175,55,0.3)]">
             <Image
               src="/logo_monograma_maria_santissima.jpeg"
               alt="Logo Monograma MR Vox Regina Caeli"
-              width={160}
-              height={160}
+              width={208}
+              height={208}
               className="w-full h-full object-cover rounded-full border-4 border-wine-950"
             />
           </div>
