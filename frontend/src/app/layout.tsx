@@ -28,6 +28,9 @@ export const metadata: Metadata = {
   },
   description:
     "Revista digital católica independente com conteúdo editorial sobre notícias da Igreja, espiritualidade, apologética e entrevistas.",
+  icons: {
+    icon: "/background-nossa-senhora.jpeg",
+  },
   openGraph: {
     title: "Vox Regina Caeli",
     description:
