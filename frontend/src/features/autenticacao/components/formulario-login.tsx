@@ -40,7 +40,7 @@ export function FormularioLogin() {
   }
 
   return (
-    <div className="w-full max-w-md reveal-up">
+    <div className="w-full max-w-md entrar-reveal">
       <div className="flex lg:hidden justify-center mb-8">
         <div className="relative w-24 h-24 rounded-full p-0.5 bg-gradient-to-br from-gold-400 via-gold-600 to-yellow-900 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
           <Image
