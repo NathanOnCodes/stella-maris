@@ -135,18 +135,20 @@ export function mockListarPublicacoes(filtros?: {
 }): PublicacaoResumo[] {
   let resultado = [...MOCK_PUBLICACOES];
   if (filtros?.categoria_slug) {
-    resultado = resultado.filter(
-      (p) => p.categoria_nome?.toLowerCase() === filtros.categoria_slug?.toLowerCase(),
-    );
+    const slug = filtros.categoria_slug.toLowerCase();
+    resultado = resultado.filter((p) => {
+      const nome = p.categoria_nome?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      return nome === slug;
+    });
   }
   if (filtros?.busca) {
-    const termo = filtros.busca.toLowerCase();
-    resultado = resultado.filter(
-      (p) =>
-        p.titulo.toLowerCase().includes(termo) ||
-        p.subtitulo.toLowerCase().includes(termo) ||
-        p.autor_nome.toLowerCase().includes(termo),
-    );
+    const termo = filtros.busca.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    resultado = resultado.filter((p) => {
+      const titulo = p.titulo.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      const subtitulo = p.subtitulo.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      const autor = p.autor_nome.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      return titulo.includes(termo) || subtitulo.includes(termo) || autor.includes(termo);
+    });
   }
   return resultado;
 }
