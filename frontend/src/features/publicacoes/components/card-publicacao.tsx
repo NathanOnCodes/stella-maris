@@ -1,70 +1,54 @@
-"use client";
-
 import Link from "next/link";
-import { motion, useReducedMotion, type Variants } from "motion/react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import Image from "next/image";
 import type { PublicacaoResumo } from "@/features/publicacoes/types";
 
 interface Props {
   publicacao: PublicacaoResumo;
+  index?: number;
 }
 
-export function CardPublicacao({ publicacao }: Props) {
-  const reduzirMovimento = useReducedMotion();
-
-  const variants: Variants = {
-    escondido: { opacity: 0, y: reduzirMovimento ? 0 : 20 },
-    visivel: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
-    },
-  };
-
+export function CardPublicacao({ publicacao, index = 0 }: Props) {
   return (
-    <motion.div
-      variants={variants}
-      whileHover={
-        reduzirMovimento ? undefined : { y: -6, transition: { duration: 0.25 } }
-      }
-      className="group h-full"
+    <article
+      className="group flex flex-col bg-white rounded-sm overflow-hidden border border-gray-100 hover:border-gold-500 transition-all duration-700 ease-out hover:-translate-y-3 cursor-pointer hover:shadow-neon-gold"
+      style={{ transitionDelay: `${index * 100}ms` }}
     >
-      <Link href={`/artigo/${publicacao.slug}`} className="block h-full">
-        <Card className="h-full border-border/70 transition-all duration-300 group-hover:border-primary/40 group-hover:shadow-[0_8px_30px_-8px_color-mix(in_oklch,var(--neon-vinho)_35%,transparent)]">
-          <CardContent className="flex h-full flex-col gap-2 p-5">
-            {publicacao.categoria_nome && (
-              <Badge
-                variant="secondary"
-                className="w-fit text-xs uppercase tracking-wider"
-              >
-                {publicacao.categoria_nome}
-              </Badge>
-            )}
-            <h2 className="text-xl font-display font-semibold leading-tight transition-colors group-hover:text-primary">
-              {publicacao.titulo}
-            </h2>
-            {publicacao.subtitulo && (
-              <p className="text-sm text-muted-foreground font-leitura">
-                {publicacao.subtitulo}
-              </p>
-            )}
-            <div className="mt-auto flex items-center gap-2 pt-2 text-xs text-muted-foreground font-ui">
-              <span>{publicacao.autor_nome}</span>
-              {publicacao.data_publicacao && (
-                <>
-                  <span>·</span>
-                  <time>
-                    {new Date(publicacao.data_publicacao).toLocaleDateString(
-                      "pt-BR",
-                    )}
-                  </time>
-                </>
-              )}
+      <Link href={`/artigo/${publicacao.slug}`} className="flex flex-col h-full">
+        <div className="relative h-56 overflow-hidden">
+          {publicacao.imagem_capa ? (
+            <Image
+              src={publicacao.imagem_capa}
+              alt={publicacao.titulo}
+              width={600}
+              height={300}
+              className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-1000 ease-in-out"
+            />
+          ) : (
+            <div className="w-full h-full bg-wine-900 flex items-center justify-center">
+              <span className="text-gold-500 text-4xl font-serif">☩</span>
             </div>
-          </CardContent>
-        </Card>
+          )}
+          <div className="absolute inset-0 bg-wine-900/0 group-hover:bg-wine-900/10 transition-colors duration-500" />
+        </div>
+        <div className="p-6 flex flex-col flex-grow">
+          {publicacao.categoria_nome && (
+            <span className="text-wine-700 text-xs font-bold uppercase tracking-widest mb-2">
+              {publicacao.categoria_nome}
+            </span>
+          )}
+          <h3 className="font-serif text-xl font-bold text-gray-900 mb-3 leading-snug group-hover:text-wine-700 transition-colors">
+            {publicacao.titulo}
+          </h3>
+          {publicacao.subtitulo && (
+            <p className="text-gray-600 text-sm mb-6 line-clamp-3 flex-grow">
+              {publicacao.subtitulo}
+            </p>
+          )}
+          <span className="inline-flex items-center text-wine-900 font-semibold text-sm transition-colors group-hover:text-gold-600">
+            Ler artigo <span className="ml-2 font-serif text-lg leading-none transform group-hover:translate-x-1 transition-transform">→</span>
+          </span>
+        </div>
       </Link>
-    </motion.div>
+    </article>
   );
 }

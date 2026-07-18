@@ -1,7 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "motion/react";
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 interface Props {
   children: ReactNode;
@@ -10,30 +9,35 @@ interface Props {
 }
 
 export function Reveal({ children, delay = 0, className }: Props) {
-  const reduzirMovimento = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
 
-  const variants: Variants = {
-    escondido: { opacity: 0, y: reduzirMovimento ? 0 : 28 },
-    visivel: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        delay,
-        ease: [0.22, 1, 0.36, 1],
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) {
+      el.classList.add("active");
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => el.classList.add("active"), delay);
+          observer.unobserve(el);
+        }
       },
-    },
-  };
+      { threshold: 0.1 },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [delay]);
 
   return (
-    <motion.div
-      variants={variants}
-      initial="escondido"
-      whileInView="visivel"
-      viewport={{ once: true, amount: 0.2 }}
-      className={className}
-    >
+    <div ref={ref} className={`reveal-up${className ? ` ${className}` : ""}`}>
       {children}
-    </motion.div>
+    </div>
   );
 }
