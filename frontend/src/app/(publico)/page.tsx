@@ -3,7 +3,6 @@ import { listarPublicacoes } from "@/features/publicacoes/api/buscar-publicacoes
 import { HeroBanner } from "@/features/publicacoes/components/hero-banner";
 import { ListaPublicacoes } from "@/features/publicacoes/components/lista-publicacoes";
 import { QuoteSection } from "@/components/quote-section";
-import { Sidebar } from "@/components/sidebar";
 import { Reveal } from "@/components/anim/reveal";
 
 export const dynamic = "force-dynamic";
@@ -29,30 +28,24 @@ export default async function HomePage() {
       </Reveal>
 
       <section className="bg-white py-16 lg:py-24 border-t border-gray-100">
-        <div className="container mx-auto px-4 lg:px-8 grid grid-cols-1 md:grid-cols-[1fr,320px] gap-12">
-          <div className="space-y-8">
-            <div className="flex items-center justify-between mb-8 border-b border-gray-200 pb-4">
-              <h2 className="font-serif text-2xl md:text-3xl font-bold text-wine-900">
-                Artigos, Notícias e Entrevistas
-              </h2>
-              <Link
-                href="/noticias"
-                className="hidden md:flex text-sm font-semibold text-wine-700 hover:text-gold-600 uppercase tracking-widest transition-colors items-center"
-              >
-                Ver todos <span className="ml-2 font-serif text-lg leading-none">&rarr;</span>
-              </Link>
-            </div>
-
-            <Reveal>
-              <ListaPublicacoes
-                publicacoes={destaques}
-                vazia="Nenhuma publicação encontrada."
-              />
-            </Reveal>
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="flex items-center justify-between mb-12 border-b border-gray-200 pb-4">
+            <h2 className="font-serif text-2xl md:text-3xl font-bold text-wine-900">
+              Artigos, Notícias e Entrevistas
+            </h2>
+            <Link
+              href="/noticias"
+              className="hidden md:flex text-sm font-semibold text-wine-700 hover:text-gold-600 uppercase tracking-widest transition-colors items-center"
+            >
+              Ver todos <span className="ml-2 font-serif text-lg leading-none">&rarr;</span>
+            </Link>
           </div>
 
           <Reveal>
-            <Sidebar />
+            <ListaPublicacoes
+              publicacoes={destaques}
+              vazia="Nenhuma publicação encontrada."
+            />
           </Reveal>
         </div>
       </section>
