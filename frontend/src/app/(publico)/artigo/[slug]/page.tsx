@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
-import { obterPublicacaoPorSlug } from "@/features/publicacoes/api/buscar-publicacoes";
-
-export const dynamic = "force-dynamic";
+import { mockObterPublicacaoPorSlug } from "@/lib/mock";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -11,7 +9,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const pub = await obterPublicacaoPorSlug(slug).catch(() => null);
+  const pub = mockObterPublicacaoPorSlug(slug);
   if (!pub) return {};
   return {
     title: pub.titulo,
@@ -28,18 +26,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ArtigoPage({ params }: Props) {
   const { slug } = await params;
-  const pub = await obterPublicacaoPorSlug(slug).catch(() => null);
+  const pub = mockObterPublicacaoPorSlug(slug);
   if (!pub) notFound();
 
   return (
-    <article className="space-y-6">
+    <article className="container mx-auto px-4 lg:px-8 py-8 space-y-6 max-w-3xl">
       <header className="space-y-3">
         {pub.categoria_nome && (
           <Badge variant="secondary" className="w-fit text-xs uppercase tracking-wider">
             {pub.categoria_nome}
           </Badge>
         )}
-        <h1 className="text-3xl font-display font-bold leading-tight md:text-4xl">
+        <h1 className="text-3xl font-display font-bold leading-tight text-wine-900 md:text-4xl">
           {pub.titulo}
         </h1>
         {pub.subtitulo && (
