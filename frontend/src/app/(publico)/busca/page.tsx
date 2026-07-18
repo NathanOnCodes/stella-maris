@@ -1,7 +1,5 @@
-import { listarPublicacoes } from "@/features/publicacoes/api/buscar-publicacoes";
+import { mockListarPublicacoes } from "@/lib/mock";
 import { ListaPublicacoes } from "@/features/publicacoes/components/lista-publicacoes";
-
-export const dynamic = "force-dynamic";
 
 interface Props {
   searchParams: Promise<{ busca?: string }>;
@@ -10,13 +8,13 @@ interface Props {
 export default async function BuscaPage({ searchParams }: Props) {
   const { busca } = await searchParams;
   const publicacoes = busca
-    ? await listarPublicacoes({ busca }).catch(() => [])
+    ? mockListarPublicacoes({ busca })
     : [];
 
   return (
-    <section className="space-y-6">
+    <section className="container mx-auto px-4 lg:px-8 py-8 space-y-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-display font-bold">Busca</h1>
+        <h1 className="text-3xl font-display font-bold text-wine-900">Busca</h1>
         <form className="flex gap-2" action="/busca" method="GET">
           <input
             name="busca"
@@ -35,7 +33,7 @@ export default async function BuscaPage({ searchParams }: Props) {
 
       {busca && (
         <section className="space-y-4">
-          <h2 className="text-lg font-display font-semibold">
+          <h2 className="text-lg font-display font-semibold text-wine-900">
             Resultados para &ldquo;{busca}&rdquo;
           </h2>
           <ListaPublicacoes
