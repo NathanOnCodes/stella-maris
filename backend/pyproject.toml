@@ -10,5 +10,7 @@ dependencies = [
     "django-ninja>=1.6.2",
     "django-ninja-jwt>=5.4.4",
     "pillow>=12.3.0",
+    "gunicorn>=23.0.0,<24",
+    "psycopg[binary]>=3.2,<4",
     "python-dotenv>=1.2.2",
 ]
