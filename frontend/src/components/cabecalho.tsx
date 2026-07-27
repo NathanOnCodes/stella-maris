@@ -14,55 +14,59 @@ export function Cabecalho() {
   const [menuAberto, setMenuAberto] = useState(false);
 
   return (
-    <header className="bg-wine-900 text-white sticky top-0 z-50 shadow-md border-b border-gold-500/20">
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="font-serif text-2xl md:text-3xl font-bold tracking-wide flex items-center gap-2">
-              <span className="text-gold-500 text-3xl">☩</span> Vox Regina Caeli
+    <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 lg:px-8">
+      <div className="mx-auto max-w-7xl rounded-full border border-white/10 bg-wine-950/85 shadow-2xl shadow-wine-950/20 backdrop-blur-xl">
+        <div className="flex h-16 items-center justify-between px-4 sm:px-6">
+          <div className="flex-shrink-0">
+            <Link href="/" className="group flex items-center gap-2 font-serif text-sm font-bold tracking-[0.14em] text-white sm:text-base">
+              <span className="text-xl text-gold-500 transition-transform duration-500 group-hover:rotate-12 sm:text-2xl">☩</span>
+              <span>VOX REGINA CAELI</span>
             </Link>
           </div>
 
-          <div className="flex md:hidden items-center gap-4">
-            <a href="#" className="text-xs uppercase tracking-widest text-gold-500 font-semibold">Entrar</a>
+          <div className="flex items-center gap-4 md:hidden">
+            <Link href="/entrar" className="text-[10px] font-semibold uppercase tracking-widest text-gold-400">Aceder</Link>
             <button
               onClick={() => setMenuAberto(!menuAberto)}
-              className="text-white hover:text-gold-500 focus:outline-none transition-colors"
-              aria-label="Abrir menu"
+              className="text-white transition-colors hover:text-gold-500 focus:outline-none"
+              aria-label={menuAberto ? "Fechar menu" : "Abrir menu"}
+              aria-expanded={menuAberto}
             >
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={menuAberto ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
               </svg>
             </button>
           </div>
 
-          <nav className="hidden md:flex space-x-8 items-center font-medium text-sm tracking-widest uppercase">
+          <nav className="hidden items-center space-x-8 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/75 md:flex">
             {CATEGORIAS.map((cat) => (
               <Link
                 key={cat.slug}
                 href={`/${cat.slug}`}
-                className="hover:text-gold-500 transition-colors duration-300"
+                className="transition-colors duration-300 hover:text-gold-400"
               >
                 {cat.nome}
               </Link>
             ))}
-            <button className="text-white hover:text-gold-500 transition-colors border-l border-wine-700 pl-6 ml-2" aria-label="Buscar">
+            <Link href="/entrar" className="border-l border-white/15 pl-6 text-gold-400 transition-colors hover:text-white">Aceder</Link>
+            <Link href="/entrar" className="rounded-full bg-gold-500 px-4 py-2 text-[10px] font-bold tracking-[0.15em] text-wine-950 transition hover:bg-white">Subscrever</Link>
+            <Link href="/busca" className="ml-1 border-l border-white/15 pl-5 text-white transition-colors hover:text-gold-400" aria-label="Buscar">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-            </button>
+            </Link>
           </nav>
         </div>
 
         {menuAberto && (
-          <div className="md:hidden bg-wine-950 border-t border-wine-800">
-            <div className="px-4 pt-4 pb-6 space-y-2 text-left uppercase tracking-widest text-sm font-semibold">
+          <div className="rounded-b-3xl border-t border-white/10 bg-wine-950/95 md:hidden">
+            <div className="space-y-2 px-5 pb-5 pt-4 text-left text-xs font-semibold uppercase tracking-widest">
               {CATEGORIAS.map((cat) => (
                 <Link
                   key={cat.slug}
                   href={`/${cat.slug}`}
                   onClick={() => setMenuAberto(false)}
-                  className="block py-3 text-gray-300 hover:text-gold-500 transition-colors border-b border-wine-800"
+                  className="block border-b border-white/10 py-3 text-white/75 transition-colors hover:text-gold-400"
                 >
                   {cat.nome}
                 </Link>

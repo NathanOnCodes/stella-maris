@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
 import { mockObterPublicacaoPorSlug } from "@/lib/mock";
+import { LeitorArtigo } from "@/features/publicacoes/components/leitor-artigo";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -29,53 +29,5 @@ export default async function ArtigoPage({ params }: Props) {
   const pub = mockObterPublicacaoPorSlug(slug);
   if (!pub) notFound();
 
-  return (
-    <article className="container mx-auto px-4 lg:px-8 py-8 space-y-6 max-w-3xl">
-      <header className="space-y-3">
-        {pub.categoria_nome && (
-          <Badge variant="secondary" className="w-fit text-xs uppercase tracking-wider">
-            {pub.categoria_nome}
-          </Badge>
-        )}
-        <h1 className="text-3xl font-display font-bold leading-tight text-wine-900 md:text-4xl">
-          {pub.titulo}
-        </h1>
-        {pub.subtitulo && (
-          <p className="text-lg text-muted-foreground font-leitura">
-            {pub.subtitulo}
-          </p>
-        )}
-        <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground font-ui">
-          <span>{pub.autor_nome}</span>
-          {pub.data_publicacao && (
-            <>
-              <span>·</span>
-              <time dateTime={pub.data_publicacao}>
-                {new Date(pub.data_publicacao).toLocaleDateString("pt-BR", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
-              </time>
-            </>
-          )}
-        </div>
-      </header>
-
-      <div
-        className="prose prose-lg max-w-none font-leitura leading-relaxed [&_em]:italic"
-        dangerouslySetInnerHTML={{ __html: pub.conteudo }}
-      />
-
-      {pub.tags.length > 0 && (
-        <footer className="flex flex-wrap gap-2 border-t border-border pt-4">
-          {pub.tags.map((tag) => (
-            <Badge key={tag.id} variant="outline" className="text-xs">
-              {tag.nome}
-            </Badge>
-          ))}
-        </footer>
-      )}
-    </article>
-  );
+  return <LeitorArtigo publicacao={pub} />;
 }

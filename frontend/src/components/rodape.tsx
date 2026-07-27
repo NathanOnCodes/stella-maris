@@ -14,11 +14,11 @@ export async function Rodape() {
   const config = await obterConfiguracao();
 
   return (
-    <footer className="bg-wine-950 text-gray-300 pt-16 pb-8 border-t-4 border-gold-500">
+    <footer className="border-t border-gold-500/20 bg-wine-950 pb-8 pt-20 text-gray-300">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
           <div className="col-span-2 lg:col-span-2">
-            <h2 className="font-serif text-2xl font-bold text-white mb-4">
+            <h2 className="mb-4 font-serif text-2xl font-bold text-white">
               <span className="text-gold-500">☩</span> {config?.nome_site ?? "Vox Regina Caeli"}
             </h2>
             <p className="text-sm text-gray-400 max-w-sm mb-6 leading-relaxed">

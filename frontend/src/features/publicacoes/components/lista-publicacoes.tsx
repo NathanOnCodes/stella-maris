@@ -19,7 +19,7 @@ export function ListaPublicacoes({
   }
 
   return (
-    <div className="grid gap-10 md:grid-cols-2">
+    <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
       {publicacoes.map((p, i) => (
         <CardPublicacao key={p.id} publicacao={p} index={i} />
       ))}
