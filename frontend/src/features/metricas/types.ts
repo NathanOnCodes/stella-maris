@@ -17,4 +17,5 @@ export interface Dashboard {
   arquivados: number;
   acessos_por_periodo: VisualizacaoPorPeriodo[];
   mais_lidas: PublicacaoMaisLida[];
+  total_visualizacoes?: number;
 }

@@ -12,6 +12,7 @@ const schema = z.object({
   titulo: z.string().min(3, "Título deve ter ao menos 3 caracteres."),
   subtitulo: z.string().optional(),
   status: z.string().default("rascunho"),
+  tipo_editorial: z.enum(["artigo", "entrevista", "coluna"]).default("artigo"),
   categoria_id: z.string().optional(),
 });
 
@@ -43,6 +44,7 @@ export default function EditarPublicacaoPage({
         titulo: pub.titulo,
         subtitulo: pub.subtitulo,
         status: pub.status,
+        tipo_editorial: pub.tipo_editorial ?? "artigo",
         categoria_id: pub.categoria_id?.toString() ?? "",
       });
       setConteudo(pub.conteudo);
@@ -66,6 +68,7 @@ export default function EditarPublicacaoPage({
       titulo: data.titulo,
       subtitulo: data.subtitulo,
       status: data.status,
+      tipo_editorial: data.tipo_editorial,
       conteudo: htmlSanitizado,
       categoria_id: data.categoria_id ? Number(data.categoria_id) : null,
     };
@@ -120,16 +123,23 @@ export default function EditarPublicacaoPage({
           <EditorConteudo conteudo={conteudo} onChange={setConteudo} />
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium font-ui">Status</label>
-          <select
-            {...register("status")}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-ui"
-          >
-            <option value="rascunho">Rascunho</option>
-            <option value="publicado">Publicado</option>
-            <option value="arquivado">Arquivado</option>
-          </select>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <label className="text-sm font-medium font-ui">Tipo editorial</label>
+            <select {...register("tipo_editorial")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-ui">
+              <option value="artigo">Artigo</option>
+              <option value="entrevista">Entrevista</option>
+              <option value="coluna">Coluna</option>
+            </select>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium font-ui">Status</label>
+            <select {...register("status")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-ui">
+              <option value="rascunho">Rascunho</option>
+              <option value="publicado">Publicado</option>
+              <option value="arquivado">Arquivado</option>
+            </select>
+          </div>
         </div>
 
         {erro && <p className="text-sm text-destructive font-ui">{erro}</p>}

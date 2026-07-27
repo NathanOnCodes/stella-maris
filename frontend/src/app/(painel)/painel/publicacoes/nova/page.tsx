@@ -13,6 +13,7 @@ const schema = z.object({
   subtitulo: z.string().optional(),
   slug: z.string().optional(),
   status: z.string().default("rascunho"),
+  tipo_editorial: z.enum(["artigo", "entrevista", "coluna"]).default("artigo"),
   categoria_id: z.string().optional(),
 });
 
@@ -29,7 +30,7 @@ export default function NovaPublicacaoPage() {
 
   const form = useForm({
     resolver: zodResolver(schema),
-    defaultValues: { status: "rascunho" },
+    defaultValues: { status: "rascunho", tipo_editorial: "artigo" },
   });
   const { register, handleSubmit, formState: { errors } } = form;
 
@@ -61,6 +62,7 @@ export default function NovaPublicacaoPage() {
       titulo: data.titulo,
       subtitulo: data.subtitulo,
       status: data.status,
+      tipo_editorial: data.tipo_editorial,
       conteudo: htmlSanitizado,
       categoria_id: data.categoria_id ? Number(data.categoria_id) : null,
       data_publicacao: data.status === "publicado"
@@ -114,7 +116,15 @@ export default function NovaPublicacaoPage() {
           <EditorConteudo conteudo={conteudo} onChange={setConteudo} />
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="space-y-2">
+            <label className="text-sm font-medium font-ui">Tipo editorial</label>
+            <select {...register("tipo_editorial")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-ui">
+              <option value="artigo">Artigo</option>
+              <option value="entrevista">Entrevista</option>
+              <option value="coluna">Coluna</option>
+            </select>
+          </div>
           <div className="space-y-2">
             <label className="text-sm font-medium font-ui">Categoria</label>
             <select

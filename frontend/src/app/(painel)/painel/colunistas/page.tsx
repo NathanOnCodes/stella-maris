@@ -37,7 +37,7 @@ export default function ColunistasPage() {
   const { register, handleSubmit, reset, formState: { errors } } = form;
 
   async function carregar() {
-    const res = await fetch("/api/colunistas");
+    const res = await fetch("/api/usuarios");
     if (res.ok) setColunistas(await res.json());
   }
 
@@ -66,6 +66,15 @@ export default function ColunistasPage() {
   async function excluir(id: number) {
     if (!confirm("Tem certeza?")) return;
     const res = await fetch(`/api/colunistas/${id}`, { method: "DELETE" });
+    if (res.ok) carregar();
+  }
+
+  async function alterarTipo(id: number, tipo: "admin" | "colunista") {
+    const res = await fetch(`/api/usuarios/${id}/tipo`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tipo }),
+    });
     if (res.ok) carregar();
   }
 
@@ -117,11 +126,16 @@ export default function ColunistasPage() {
             <TableRow key={c.id}>
               <TableCell className="font-medium font-ui">{c.username}</TableCell>
               <TableCell className="font-ui">{c.email}</TableCell>
-              <TableCell className="font-ui">{c.tipo}</TableCell>
+              <TableCell className="font-ui uppercase">{c.tipo}</TableCell>
               <TableCell>
-                <Button variant="destructive" size="sm" onClick={() => excluir(c.id)}>
-                  Excluir
-                </Button>
+                <div className="flex gap-2">
+                  {c.tipo !== "master" && (
+                    <Button variant="outline" size="sm" onClick={() => alterarTipo(c.id, c.tipo === "admin" ? "colunista" : "admin")}>
+                      {c.tipo === "admin" ? "Rebaixar" : "Promover"}
+                    </Button>
+                  )}
+                  {c.tipo === "colunista" && <Button variant="destructive" size="sm" onClick={() => excluir(c.id)}>Excluir</Button>}
+                </div>
               </TableCell>
             </TableRow>
           ))}

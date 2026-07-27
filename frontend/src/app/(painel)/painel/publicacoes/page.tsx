@@ -42,6 +42,8 @@ export default async function AdminPublicacoesPage() {
             <TableHead className="font-ui">Autor</TableHead>
             <TableHead className="font-ui">Categoria</TableHead>
             <TableHead className="font-ui">Status</TableHead>
+            <TableHead className="font-ui">Tipo</TableHead>
+            <TableHead className="font-ui">Leituras</TableHead>
             <TableHead className="font-ui">Data</TableHead>
           </TableRow>
         </TableHeader>
@@ -66,6 +68,12 @@ export default async function AdminPublicacoesPage() {
                 <Badge className={COR_STATUS[pub.status] ?? ""}>
                   {pub.status}
                 </Badge>
+              </TableCell>
+              <TableCell className="font-ui text-xs uppercase tracking-wide">
+                {pub.tipo_editorial ?? "artigo"}
+              </TableCell>
+              <TableCell className="font-ui text-sm text-muted-foreground">
+                {pub.visualizacoes_total ?? 0}
               </TableCell>
               <TableCell className="text-muted-foreground font-ui text-sm">
                 {pub.data_publicacao

@@ -14,6 +14,8 @@ export const ROTAS = {
   CONFIGURACOES: "/configuracoes",
   METRICAS_DASHBOARD: "/metricas/dashboard",
   METRICAS_ACESSOS: "/metricas/acessos",
+  METRICAS_ME: "/metricas/me",
+  USUARIOS_TIPO: "/autenticacao/usuarios",
 } as const;
 
 export const STATUS_PUBLICACAO = {

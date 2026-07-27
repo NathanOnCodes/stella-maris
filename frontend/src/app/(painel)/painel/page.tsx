@@ -2,6 +2,8 @@ import { adminGet } from "@/lib/fetch-admin";
 import { ROTAS } from "@/lib/constantes";
 import type { Dashboard } from "@/features/metricas/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Archive, Eye, FileText, PenLine } from "lucide-react";
+import { PainelMetricCard } from "@/components/painel-metric-card";
 import { GraficoAcessos } from "@/features/metricas/components/grafico-acessos";
 import { TabelaMaisLidas } from "@/features/metricas/components/tabela-mais-lidas";
 
@@ -24,56 +26,18 @@ export default async function DashboardPage() {
   }
 
   return (
-    <section className="space-y-6">
-      <h1 className="text-2xl font-display font-bold">Dashboard</h1>
+    <section className="space-y-8">
+      <header>
+        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-wine-700">Visão geral</p>
+        <h1 className="mt-2 font-display text-4xl font-semibold tracking-tight text-wine-950">Dashboard editorial</h1>
+        <p className="mt-2 text-sm text-muted-foreground">Acompanhe o ritmo da redação e a presença da Vox Regina Caeli.</p>
+      </header>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-ui text-muted-foreground">
-              Total
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-display font-bold">{dados.total}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-ui text-muted-foreground">
-              Publicados
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-display font-bold text-primary">
-              {dados.publicados}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-ui text-muted-foreground">
-              Rascunhos
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-display font-bold text-muted-foreground">
-              {dados.rascunhos}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-ui text-muted-foreground">
-              Arquivados
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-display font-bold text-destructive">
-              {dados.arquivados}
-            </p>
-          </CardContent>
-        </Card>
+        <PainelMetricCard label="Conteúdos" value={dados.total} hint="Todo o acervo editorial" icon={FileText} tone="neutral" />
+        <PainelMetricCard label="Publicados" value={dados.publicados} hint="Disponíveis ao público" icon={PenLine} tone="gold" />
+        <PainelMetricCard label="Visualizações" value={dados.total_visualizacoes ?? 0} hint="Visitantes únicos por dia" icon={Eye} tone="wine" />
+        <PainelMetricCard label="Arquivados" value={dados.arquivados} hint={`${dados.rascunhos} em rascunho`} icon={Archive} tone="danger" />
       </div>
 
       {dados.acessos_por_periodo.length > 0 && (

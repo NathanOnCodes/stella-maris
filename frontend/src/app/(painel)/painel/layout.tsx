@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { FileText, LayoutDashboard, Settings, Users, LogOut } from "lucide-react";
+import { FileText, LayoutDashboard, Settings, Users, LogOut, BarChart3 } from "lucide-react";
 import { obterSessao } from "@/lib/sessao";
 
 export default async function PainelLayout({
@@ -35,6 +35,15 @@ export default async function PainelLayout({
             <FileText className="size-4" />
             Publicações
           </Link>
+          {sessao.tipo === "colunista" && (
+            <Link
+              href="/painel/me"
+              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-ui font-medium text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+            >
+              <BarChart3 className="size-4" />
+              Meu desempenho
+            </Link>
+          )}
           {sessao.eh_administrador && (
             <>
               <Link
