@@ -4,7 +4,6 @@ import { HeroBanner } from "@/features/publicacoes/components/hero-banner";
 import { ListaPublicacoes } from "@/features/publicacoes/components/lista-publicacoes";
 import { QuoteSection } from "@/components/quote-section";
 import { Reveal } from "@/components/anim/reveal";
-import { TemasDestaque } from "@/components/temas-destaque";
 import { InscricaoEditorial } from "@/components/inscricao-editorial";
 
 export default function HomePage() {
@@ -20,16 +19,7 @@ export default function HomePage() {
         />
       </Reveal>
 
-      <TemasDestaque />
-
-      <Reveal>
-        <QuoteSection
-          citacao="A cruz é a escola do amor. Nela, Jesus Cristo nos ensina que não há verdadeiro amor sem sacrifício."
-          autor="São Maximiliano Kolbe"
-        />
-      </Reveal>
-
-      <section className="bg-[#faf9f6] py-16 lg:py-24">
+      <section className="bg-canvas py-24 lg:py-36">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="mb-10 flex items-end justify-between border-b border-wine-900/10 pb-5">
             <div>
@@ -52,6 +42,14 @@ export default function HomePage() {
           </Reveal>
         </div>
       </section>
+
+      <Reveal>
+        <QuoteSection
+          citacao="A cruz é a escola do amor. Nela, Jesus Cristo nos ensina que não há verdadeiro amor sem sacrifício."
+          autor="São Maximiliano Kolbe"
+        />
+      </Reveal>
+
       <InscricaoEditorial />
     </div>
   );

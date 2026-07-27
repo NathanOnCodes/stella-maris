@@ -5,7 +5,6 @@ import { useState } from "react";
 
 const CATEGORIAS = [
   { nome: "Notícias", slug: "noticias" },
-  { nome: "Espiritualidade", slug: "espiritualidade" },
   { nome: "Entrevistas", slug: "entrevistas" },
   { nome: "Colunas", slug: "colunas" },
 ];
@@ -25,7 +24,11 @@ export function Cabecalho() {
           </div>
 
           <div className="flex items-center gap-4 md:hidden">
-            <Link href="/entrar" className="text-[10px] font-semibold uppercase tracking-widest text-gold-400">Aceder</Link>
+            <Link href="/busca" className="text-white transition-colors hover:text-gold-400" aria-label="Buscar">
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </Link>
             <button
               onClick={() => setMenuAberto(!menuAberto)}
               className="text-white transition-colors hover:text-gold-500 focus:outline-none"
@@ -48,8 +51,6 @@ export function Cabecalho() {
                 {cat.nome}
               </Link>
             ))}
-            <Link href="/entrar" className="border-l border-white/15 pl-6 text-gold-400 transition-colors hover:text-white">Aceder</Link>
-            <Link href="/entrar" className="rounded-full bg-gold-500 px-4 py-2 text-[10px] font-bold tracking-[0.15em] text-wine-950 transition hover:bg-white">Subscrever</Link>
             <Link href="/busca" className="ml-1 border-l border-white/15 pl-5 text-white transition-colors hover:text-gold-400" aria-label="Buscar">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
