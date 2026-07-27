@@ -68,3 +68,13 @@ class MetricaAPITest(TestCase):
             **self._auth(),
         )
         self.assertEqual(response.status_code, 200)
+
+    def test_dashboard_do_colunista_retorna_apenas_metricas_proprias(self):
+        response = self.client.get(
+            "/api/metricas/me?periodo=dia",
+            **self._auth("colunista", "col123"),
+        )
+        self.assertEqual(response.status_code, 200)
+        dados = response.json()
+        self.assertEqual(dados["total"], 0)
+        self.assertIn("total_visualizacoes", dados)

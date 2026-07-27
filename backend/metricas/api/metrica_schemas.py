@@ -20,3 +20,4 @@ class DashboardOut(Schema):
     arquivados: int
     acessos_por_periodo: list[VisualizacaoPorPeriodoOut] = []
     mais_lidas: list[PublicacaoMaisLidaOut] = []
+    total_visualizacoes: int = 0

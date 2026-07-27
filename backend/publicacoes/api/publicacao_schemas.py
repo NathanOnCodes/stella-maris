@@ -11,6 +11,7 @@ class PublicacaoIn(Schema):
     slug: str | None = None
     conteudo: str = ""
     status: str = "rascunho"
+    tipo_editorial: str = "artigo"
     data_publicacao: datetime | None = None
     categoria_id: int | None = None
     tag_ids: list[int] = []
@@ -22,6 +23,7 @@ class PublicacaoUpdate(Schema):
     slug: str | None = None
     conteudo: str | None = None
     status: str | None = None
+    tipo_editorial: str | None = None
     data_publicacao: datetime | None = None
     categoria_id: int | None = None
     tag_ids: list[int] | None = None
@@ -35,6 +37,7 @@ class PublicacaoOut(Schema):
     conteudo: str
     imagem_capa: str | None = None
     status: str
+    tipo_editorial: str
     data_publicacao: datetime | None = None
     criado_em: datetime
     atualizado_em: datetime
@@ -43,6 +46,7 @@ class PublicacaoOut(Schema):
     categoria_id: int | None = None
     categoria_nome: str | None = None
     tags: list[TagOut] = []
+    visualizacoes_total: int = 0
 
 
 class PublicacaoResumoOut(Schema):
@@ -52,7 +56,9 @@ class PublicacaoResumoOut(Schema):
     slug: str
     imagem_capa: str | None = None
     status: str
+    tipo_editorial: str
     data_publicacao: datetime | None = None
     autor_nome: str
     categoria_nome: str | None = None
     tags: list[TagOut] = []
+    visualizacoes_total: int = 0

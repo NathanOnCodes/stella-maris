@@ -21,6 +21,7 @@ def listar_publicas(
     categoria_slug: str | None = None,
     tag_slug: str | None = None,
     busca: str | None = None,
+    tipo_editorial: str | None = None,
 ):
     return [
         PublicacaoService._publicacao_resumo_para_dict(p)
@@ -28,6 +29,7 @@ def listar_publicas(
             categoria_slug=categoria_slug,
             tag_slug=tag_slug,
             busca=busca,
+            tipo_editorial=tipo_editorial,
         )
     ]
 

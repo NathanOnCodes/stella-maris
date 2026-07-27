@@ -193,3 +193,16 @@ class AutenticacaoAPITest(TestCase):
             **self._auth_admin(),
         )
         self.assertEqual(response.status_code, 404)
+
+    def test_master_pode_alterar_tipo_de_usuario(self):
+        self.admin.perfil.tipo = "master"
+        self.admin.perfil.save()
+        alvo = User.objects.create_user(username="alvo_tipo", password="senha123")
+        response = self.client.put(
+            f"/api/autenticacao/usuarios/{alvo.id}/tipo",
+            data={"tipo": "admin"},
+            content_type="application/json",
+            **self._auth_admin(),
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["tipo"], "admin")

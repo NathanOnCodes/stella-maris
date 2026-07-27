@@ -3,7 +3,7 @@ from http import HTTPStatus
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from autenticacao.models.perfil_model import ADMINISTRADOR, COLUNISTA, Perfil
+from autenticacao.models.perfil_model import ADMINISTRADOR, COLUNISTA, MASTER, Perfil
 from core.exceptions import ErroBaseVoxRC, PermissaoNegada, RegistroNaoEncontrado
 
 
@@ -26,6 +26,13 @@ class PerfilModelTest(TestCase):
         usuario.perfil.tipo = ADMINISTRADOR
         usuario.perfil.save()
         self.assertTrue(usuario.perfil.eh_administrador)
+
+    def test_master_eh_administrador_mas_tem_permissao_propria(self):
+        usuario = User.objects.create_user(username="master", password="senha123")
+        usuario.perfil.tipo = MASTER
+        usuario.perfil.save()
+        self.assertTrue(usuario.perfil.eh_administrador)
+        self.assertTrue(usuario.perfil.eh_master)
 
     def test_one_to_one_com_user(self):
         usuario = User.objects.create_user(username="unico", password="senha123")

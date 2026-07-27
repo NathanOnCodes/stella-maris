@@ -26,6 +26,7 @@ class PublicacaoService:
         categoria_slug: str | None = None,
         tag_slug: str | None = None,
         busca: str | None = None,
+        tipo_editorial: str | None = None,
     ):
         queryset = (
             Publicacao.objects.select_related("autor", "categoria")
@@ -43,6 +44,8 @@ class PublicacaoService:
             queryset = queryset.filter(
                 Q(titulo__icontains=busca) | Q(subtitulo__icontains=busca)
             )
+        if tipo_editorial:
+            queryset = queryset.filter(tipo_editorial=tipo_editorial)
         return queryset.order_by("-data_publicacao")
 
     @staticmethod
@@ -95,6 +98,7 @@ class PublicacaoService:
             slug=slug,
             conteudo=dados.get("conteudo", ""),
             status=dados.get("status", RASCUNHO),
+            tipo_editorial=dados.get("tipo_editorial", "artigo"),
             data_publicacao=dados.get("data_publicacao"),
             autor=autor,
             categoria=categoria,
@@ -123,7 +127,13 @@ class PublicacaoService:
         if "conteudo" in dados and dados["conteudo"] is not None:
             publicacao.conteudo = dados["conteudo"]
         if "status" in dados and dados["status"] is not None:
+            if not solicitante.perfil.eh_administrador and dados["status"] == ARQUIVADO:
+                raise PermissaoNegada(
+                    "Somente administradores podem arquivar publicações."
+                )
             publicacao.status = dados["status"]
+        if "tipo_editorial" in dados and dados["tipo_editorial"] is not None:
+            publicacao.tipo_editorial = dados["tipo_editorial"]
         if "data_publicacao" in dados:
             publicacao.data_publicacao = dados.get("data_publicacao")
         if "categoria_id" in dados and dados["categoria_id"] is not None:
@@ -144,6 +154,10 @@ class PublicacaoService:
     ) -> None:
         publicacao = PublicacaoService.buscar_publicacao_por_id(publicacao_id)
         PublicacaoService._validar_propriedade(solicitante, publicacao)
+        if not solicitante.perfil.eh_administrador and publicacao.status == ARQUIVADO:
+            raise PermissaoNegada(
+                "Colunistas não podem excluir publicações arquivadas."
+            )
         publicacao.delete()
 
     @staticmethod
@@ -197,6 +211,7 @@ class PublicacaoService:
                 publicacao.imagem_capa.url if publicacao.imagem_capa else None
             ),
             "status": publicacao.status,
+            "tipo_editorial": publicacao.tipo_editorial,
             "data_publicacao": publicacao.data_publicacao,
             "criado_em": publicacao.criado_em,
             "atualizado_em": publicacao.atualizado_em,
@@ -210,6 +225,7 @@ class PublicacaoService:
                 {"id": t.id, "nome": t.nome, "slug": t.slug}
                 for t in publicacao.tags.all()
             ],
+            "visualizacoes_total": publicacao.visualizacoes.count(),
         }
 
     @staticmethod

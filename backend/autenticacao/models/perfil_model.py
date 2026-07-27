@@ -2,8 +2,9 @@ from django.contrib.auth.models import User
 from django.db import models
 
 ADMINISTRADOR = "admin"
+MASTER = "master"
 COLUNISTA = "colunista"
-TIPOS_USUARIO = [(ADMINISTRADOR, "Administrador"), (COLUNISTA, "Colunista")]
+TIPOS_USUARIO = [(MASTER, "Master"), (ADMINISTRADOR, "Administrador"), (COLUNISTA, "Colunista")]
 
 
 class Perfil(models.Model):
@@ -21,7 +22,11 @@ class Perfil(models.Model):
 
     @property
     def eh_administrador(self) -> bool:
-        return self.tipo == ADMINISTRADOR
+        return self.tipo in {MASTER, ADMINISTRADOR}
+
+    @property
+    def eh_master(self) -> bool:
+        return self.tipo == MASTER
 
     @property
     def eh_colunista(self) -> bool:

@@ -59,6 +59,7 @@ class IntegracaoCrossModuleTest(TestCase):
                 "slug": "noticia-vaticano-integ",
                 "conteudo": "<p>Conteúdo da notícia</p>",
                 "status": "publicado",
+                "tipo_editorial": "entrevista",
                 "categoria_id": cat_id,
                 "tag_ids": [tag1_id, tag2_id],
             },
@@ -70,6 +71,7 @@ class IntegracaoCrossModuleTest(TestCase):
         self.assertEqual(dados["titulo"], "Notícia do Vaticano")
         self.assertEqual(dados["categoria_id"], cat_id)
         self.assertEqual(dados["categoria_nome"], "Notícias")
+        self.assertEqual(dados["tipo_editorial"], "entrevista")
 
         resp_publica = self.client.get("/api/publicacoes/noticia-vaticano-integ")
         self.assertEqual(resp_publica.status_code, 200)

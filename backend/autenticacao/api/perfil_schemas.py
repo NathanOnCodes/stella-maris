@@ -13,12 +13,17 @@ class ColunistaUpdate(Schema):
     password: str | None = None
 
 
+class TipoUsuarioIn(Schema):
+    tipo: str
+
+
 class PerfilOut(Schema):
     id: int
     username: str
     email: str
     tipo: str
     eh_administrador: bool
+    eh_master: bool
 
 
 class AlteraSenhaIn(Schema):

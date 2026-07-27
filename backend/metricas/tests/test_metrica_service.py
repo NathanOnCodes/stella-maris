@@ -28,6 +28,15 @@ class MetricaServiceTest(TestCase):
         )
         self.assertEqual(VisualizacaoPublicacao.objects.count(), 1)
 
+    def test_registrar_visualizacao_nao_duplica_visitante_no_mesmo_dia(self):
+        MetricaService.registrar_visualizacao(
+            self.publicacao, ip="1.2.3.4", user_agent="TestAgent"
+        )
+        MetricaService.registrar_visualizacao(
+            self.publicacao, ip="1.2.3.4", user_agent="TestAgent"
+        )
+        self.assertEqual(VisualizacaoPublicacao.objects.count(), 1)
+
     def test_obter_contagens_conteudo(self):
         contagens = MetricaService.obter_contagens_conteudo(self.admin)
         self.assertIn("total", contagens)

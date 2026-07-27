@@ -6,6 +6,7 @@ from autenticacao.api.perfil_schemas import (
     ColunistaIn,
     ColunistaUpdate,
     PerfilOut,
+    TipoUsuarioIn,
 )
 from autenticacao.services.perfil_service import AutenticacaoService
 
@@ -31,6 +32,11 @@ def listar(request):
     return AutenticacaoService.listar_colunistas(request.auth)
 
 
+@router.get("/usuarios", response=list[PerfilOut], auth=auth)
+def listar_usuarios(request):
+    return AutenticacaoService.listar_usuarios(request.auth)
+
+
 @router.post("/colunistas", response=PerfilOut, auth=auth)
 def criar(request, payload: ColunistaIn):
     usuario = AutenticacaoService.criar_usuario_colunista(
@@ -51,3 +57,10 @@ def atualizar(request, colunista_id: int, payload: ColunistaUpdate):
 def deletar(request, colunista_id: int):
     AutenticacaoService.deletar_colunista(request.auth, colunista_id)
     return 204, None
+
+
+@router.put("/usuarios/{usuario_id}/tipo", response=PerfilOut, auth=auth)
+def alterar_tipo(request, usuario_id: int, payload: TipoUsuarioIn):
+    return AutenticacaoService.alterar_tipo_usuario(
+        request.auth, usuario_id, payload.tipo
+    )

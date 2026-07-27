@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 
-from autenticacao.models.perfil_model import ADMINISTRADOR, COLUNISTA, Perfil
+from autenticacao.models.perfil_model import ADMINISTRADOR, COLUNISTA, MASTER, Perfil, TIPOS_USUARIO
 from core.exceptions import PermissaoNegada, RegistroNaoEncontrado
 
 
@@ -16,6 +16,14 @@ class AutenticacaoService:
     def listar_colunistas(solicitante: User) -> list[dict]:
         AutenticacaoService._validar_eh_administrador(solicitante)
         perfis = Perfil.objects.select_related("usuario").filter(tipo=COLUNISTA)
+        return [AutenticacaoService._perfil_para_dict(p) for p in perfis]
+
+    @staticmethod
+    def listar_usuarios(solicitante: User) -> list[dict]:
+        AutenticacaoService._validar_eh_administrador(solicitante)
+        perfis = Perfil.objects.select_related("usuario").all()
+        if not solicitante.perfil.eh_master:
+            perfis = perfis.filter(tipo=COLUNISTA)
         return [AutenticacaoService._perfil_para_dict(p) for p in perfis]
 
     @staticmethod
@@ -48,6 +56,21 @@ class AutenticacaoService:
         usuario.delete()
 
     @staticmethod
+    def alterar_tipo_usuario(solicitante: User, usuario_id: int, tipo: str) -> dict:
+        if not solicitante.perfil.eh_master:
+            raise PermissaoNegada("Somente o master pode alterar permissões.")
+        tipos_validos = {opcao for opcao, _ in TIPOS_USUARIO if opcao != MASTER}
+        if tipo not in tipos_validos:
+            raise PermissaoNegada("Tipo de usuário inválido.")
+        usuario = AutenticacaoService._buscar_usuario_por_id(usuario_id)
+        perfil = AutenticacaoService._obter_perfil(usuario)
+        if perfil.eh_master:
+            raise PermissaoNegada("O usuário master não pode ser rebaixado.")
+        perfil.tipo = tipo
+        perfil.save(update_fields=["tipo"])
+        return AutenticacaoService._perfil_para_dict(perfil)
+
+    @staticmethod
     def alterar_senha(
         usuario_autenticado: User, senha_atual: str, senha_nova: str
     ) -> None:
@@ -59,7 +82,7 @@ class AutenticacaoService:
     @staticmethod
     def criar_admin(username: str, password: str, email: str = "") -> User:
         usuario = AutenticacaoService._criar_usuario(username, password, email)
-        usuario.perfil.tipo = ADMINISTRADOR
+        usuario.perfil.tipo = MASTER
         usuario.perfil.save()
         return usuario
 
@@ -77,6 +100,7 @@ class AutenticacaoService:
             "email": perfil.usuario.email,
             "tipo": perfil.tipo,
             "eh_administrador": perfil.eh_administrador,
+            "eh_master": perfil.eh_master,
         }
 
     @staticmethod

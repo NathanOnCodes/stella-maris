@@ -15,6 +15,7 @@ def dashboard(request, periodo: str = "dia"):
     mais_lidas = MetricaService.obter_publicacoes_mais_lidas(request.auth)
     return {
         **contagens,
+        "total_visualizacoes": sum(item["total"] for item in acessos),
         "acessos_por_periodo": acessos,
         "mais_lidas": mais_lidas,
     }
@@ -23,3 +24,8 @@ def dashboard(request, periodo: str = "dia"):
 @router.get("/acessos", response=list, auth=auth)
 def acessos_por_periodo(request, periodo: str = "dia"):
     return MetricaService.obter_visualizacoes_por_periodo(request.auth, periodo)
+
+
+@router.get("/me", response=DashboardOut, auth=auth)
+def meu_dashboard(request, periodo: str = "dia"):
+    return MetricaService.obter_metricas_do_usuario(request.auth, periodo)
